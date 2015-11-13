@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/base_color"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/edittext_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/base_panel"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/edt_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm"
+            android:hint="@string/edittext_id_hint"
+            app:met_floatingLabel="highlight"
+            app:met_iconLeft="@drawable/ic_credit_card_black_24dp"
+            app:met_clearButton="true"
+            app:met_primaryColor="@color/primary" >
+            <requestFocus/>
+        </com.rengwuxian.materialedittext.MaterialEditText>
+
+
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/edt_pass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:hint="@string/edittext_password_hint"
+            android:inputType="textPassword"
+            app:met_floatingLabel="highlight"
+            app:met_clearButton="true"
+            app:met_iconLeft="@drawable/ic_https_black_24dp"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm,"
+            app:met_primaryColor="@color/primary" />
+
+        <TextView
+            android:paddingTop="8dp"
+            android:id="@+id/txt_forgot"
+            android:text="@string/forgot_text"
+            android:textColor="@drawable/text_selector_primary"
+            android:layout_gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="16dp"
+        android:background="@drawable/raised_button_primary"
+        android:text="@string/login_button_text"
+        android:textColor="@color/icons" />
+</LinearLayout>

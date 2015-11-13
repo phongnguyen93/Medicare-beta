@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/base_color"
+    android:isScrollContainer="true"
+    >
+
+    <LinearLayout
+        android:id="@+id/main_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/edittext_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/base_panel"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/edit_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm"
+            android:hint="@string/edittext_id_hint"
+            app:met_floatingLabel="highlight"
+            app:met_helperText="@string/id_hint"
+            app:met_helperTextColor="@color/divider"
+            app:met_iconLeft="@drawable/ic_credit_card_black_24dp"
+            app:met_clearButton="true"
+            app:met_primaryColor="@color/primary" />
+
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/edit_pass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:hint="@string/edittext_password_hint"
+            app:met_floatingLabel="highlight"
+            app:met_clearButton="true"
+            android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm"
+            app:met_helperText="@string/password_hint"
+            app:met_helperTextColor="@color/divider"
+            app:met_iconLeft="@drawable/ic_https_black_24dp"
+            app:met_primaryColor="@color/primary"
+            android:inputType="textUri" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:met_clearButton="true"
+            android:hint="@string/edittext_name_hint"
+            app:met_helperText="@string/name_hint"
+            android:inputType="textCapWords|textPersonName"
+            app:met_floatingLabel="highlight"
+            app:met_helperTextColor="@color/divider"
+            app:met_iconLeft="@drawable/ic_account_box_black_24dp"
+            app:met_primaryColor="@color/primary" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/edit_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:hint="@string/edittext_email_hint"
+            android:inputType="textEmailAddress"
+            app:met_floatingLabel="highlight"
+            app:met_helperTextColor="@color/divider"
+            app:met_helperText="@string/email_hint"
+            app:met_clearButton="true"
+            app:met_iconLeft="@drawable/ic_email_black_24dp"
+            app:met_primaryColor="@color/primary" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/edit_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:hint="@string/edittext_phone_hint"
+            android:inputType="phone"
+            app:met_floatingLabel="highlight"
+            app:met_clearButton="true"
+            app:met_helperText="@string/phone_hint"
+            app:met_helperTextColor="@color/divider"
+            app:met_iconLeft="@drawable/ic_phone_black_24dp"
+            app:met_primaryColor="@color/primary" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_create"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_button_height"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="16dp"
+        android:background="@drawable/raised_button_primary"
+        android:text="@string/button_create_acc"
+        android:textColor="@color/icons" />
+    </LinearLayout>
+</ScrollView>

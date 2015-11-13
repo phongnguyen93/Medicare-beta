@@ -1,0 +1,53 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="BaseTheme" parent="@style/Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:textViewStyle">@style/DefaultTextView</item>
+
+
+
+    </style>
+
+    <style name="Custom" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Medium</item>
+        <item name="android:textColor">@color/primary</item>
+        <item name="DialogTitleText">Xin chờ...</item>
+        <item name="DialogSpotColor">@color/primary</item>
+        <item name="DialogSpotCount">8</item>
+        <item name="android:background">@drawable/round_dialog</item>
+    </style>
+
+    <style name="Theme.Styled" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
+        <item name="android:actionMenuTextColor">@color/icons</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:textViewStyle">@style/DefaultTextView</item>
+        <!-- specify enter and exit transitions -->
+        <item name="android:windowEnterTransition">@transition/fade</item>
+        <item name="android:windowExitTransition">@transition/fade</item>
+    </style>
+
+    <style name="Widget.Styled.ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="background">@color/primary</item>
+    </style>
+
+    <style name="raised_button_primary">
+        <item name="android:background">@drawable/raised_button_primary</item>
+        <item name="android:translationZ">4dp</item>
+        <item name="android:textColor">@color/icons</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+    <style name="raised_button_secondary">
+        <item name="android:background">@drawable/raised_button_secondary</item>
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:translationZ">4dp</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+    <style name="DefaultTextView">
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+</resources>

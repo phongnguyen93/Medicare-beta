@@ -1,0 +1,33 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.phongnguyen93.medicare.maps.MapFragment"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <com.google.android.gms.maps.MapView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" android:id="@+id/map"
+        android:layout_margin="8dp"
+       />
+
+
+    <LinearLayout
+        android:id="@+id/button_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/btnZoom1"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:elevation="4dp"
+            android:text="@string/zoom_button"
+            android:layout_gravity="center"
+            android:background="@drawable/raised_button_primary"
+            android:layout_marginBottom="16dp"/>
+
+    </LinearLayout>
+</RelativeLayout>

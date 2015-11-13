@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="10"
+    android:background="#ffffff"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="sans-serif-light"
+        android:gravity="bottom"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:text="@string/intro_map_title"
+        android:textColor="@color/primary"
+        android:textSize="28sp"
+
+        android:textStyle="normal" />
+
+    <LinearLayout
+        android:id="@+id/image_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="16dp">
+
+        <ImageView
+            android:layout_width="276dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
+            android:scaleType="center"
+            android:src="@drawable/intro_map_new" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/intro_map_description_normal"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:text="@string/intro_map_description_highlight"
+        android:textColor="@color/primary"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+
+        android:layout_width="fill_parent"
+        android:layout_height="64dp" />
+</LinearLayout>

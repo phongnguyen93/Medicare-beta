@@ -1,0 +1,9 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item android:drawable="@drawable/button_ripple1"
+        android:bottom="2dp"
+        android:right="2dp"
+        />
+
+</layer-list>
