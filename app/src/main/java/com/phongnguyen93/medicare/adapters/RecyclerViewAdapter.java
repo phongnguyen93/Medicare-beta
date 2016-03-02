@@ -70,7 +70,7 @@ public class RecyclerViewAdapter extends UltimateViewAdapter<RecyclerView.ViewHo
 
         public ViewHolder(View itemView, boolean isItem) {
             super(itemView);
-//            super(itemView);
+
 
             if(isItem) {
                 item_view = itemView.findViewById(R.id.itemview);
