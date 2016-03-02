@@ -10,7 +10,7 @@
         <item name="android:elevation">4dp</item>
     </style>
     <style name="raised_button_secondary" parent="android:style/Widget.Material.Button">
-        <item name="android:background">@color/common_signin_btn_dark_text_disabled</item>
+        <item name="android:background">#ffffff</item>
         <item name="android:layout_width">136dp</item>
         <item name="android:layout_height">56dp</item>
         <item name="android:translationZ">4dp</item>

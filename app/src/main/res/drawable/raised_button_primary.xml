@@ -1,8 +1,13 @@
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item android:drawable="@drawable/button_ripple"
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="true"
+        android:drawable="@drawable/button_ripple"
         android:bottom="2dp"
         android:right="2dp"
+
        />
-   
-</layer-list>
+    <item android:state_enabled="false"
+        android:drawable="@drawable/button_ripple2"
+        android:bottom="2dp"
+        android:right="2dp"
+        />
+</selector>

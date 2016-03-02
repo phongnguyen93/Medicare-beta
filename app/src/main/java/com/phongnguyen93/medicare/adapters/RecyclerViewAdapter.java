@@ -9,15 +9,21 @@ import android.widget.TextView;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
 import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
 import com.phongnguyen93.medicare.R;
-import com.phongnguyen93.medicare.pojo.Doctor;
+import com.phongnguyen93.medicare.model.Doctor;
 import java.util.ArrayList;
 
 /**
  * Created by Phong Nguyen on 11/9/2015.
  */
 public class RecyclerViewAdapter extends UltimateViewAdapter<RecyclerView.ViewHolder> {
-
+    private final int VIEW_ITEM = 1;
+    private final int VIEW_PROG = 0;
+    private int visibleThreshold = 5;
+    private int lastVisibleItem, totalItemCount;
+    private boolean loading;
+    private OnLoadMoreListener onLoadMoreListener;
     ArrayList<Doctor> doctors;
+
     public RecyclerViewAdapter(ArrayList<Doctor>doctors){
         this.doctors=doctors;
     }
@@ -65,9 +71,8 @@ public class RecyclerViewAdapter extends UltimateViewAdapter<RecyclerView.ViewHo
         public ViewHolder(View itemView, boolean isItem) {
             super(itemView);
 //            super(itemView);
-            progressBarSample = (ProgressBar) itemView.findViewById(R.id.progressbar);
-            if(isItem) {
 
+            if(isItem) {
                 item_view = itemView.findViewById(R.id.itemview);
                 nameTextView = (TextView) itemView.findViewById(R.id.detail_name);
                 addressTextView = (TextView) itemView.findViewById(R.id.detail_address);

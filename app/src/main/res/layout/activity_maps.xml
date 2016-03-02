@@ -12,22 +12,4 @@
         android:layout_margin="8dp"
        />
 
-
-    <LinearLayout
-        android:id="@+id/button_panel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
-        <Button
-            android:id="@+id/btnZoom1"
-            android:layout_width="250dp"
-            android:layout_height="50dp"
-            android:elevation="4dp"
-            android:text="@string/zoom_button"
-            android:layout_gravity="center"
-            android:background="@drawable/raised_button_primary"
-            android:layout_marginBottom="16dp"/>
-
-    </LinearLayout>
 </RelativeLayout>

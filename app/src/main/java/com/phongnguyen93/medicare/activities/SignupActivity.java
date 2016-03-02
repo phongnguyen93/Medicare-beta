@@ -12,7 +12,9 @@ import android.widget.Toast;
 
 import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.database.DbOperations;
+import com.phongnguyen93.medicare.extras.CurrentUser;
 import com.phongnguyen93.medicare.extras.En_Decrypt;
+import com.phongnguyen93.medicare.extras.Utils;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.json.JSONException;
@@ -32,8 +34,9 @@ import dmax.dialog.SpotsDialog;
  * Created by Phong Nguyen on 10/23/2015.
  */
 public class SignupActivity extends BaseActivity implements Button.OnClickListener {
-    private String USER_ID;
+    private String USER_ID, USER_PASS;
     SpotsDialog progressDialog;
+    CurrentUser currentUser;
     com.rengwuxian.materialedittext.MaterialEditText edit_id,edit_name,edit_pass,edit_email,edit_phone;
     Button btn_create;
     @Override
@@ -41,7 +44,7 @@ public class SignupActivity extends BaseActivity implements Button.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         viewHolder();
-
+        currentUser = new CurrentUser(getApplicationContext());
 
 
     }
@@ -55,6 +58,8 @@ public class SignupActivity extends BaseActivity implements Button.OnClickListen
         edit_phone=(MaterialEditText)findViewById(R.id.edit_phone);
         btn_create=(Button)findViewById(R.id.btn_create);
         btn_create.setOnClickListener(this);
+
+        btn_create.setEnabled(true);
 
     }
 
@@ -85,29 +90,28 @@ public class SignupActivity extends BaseActivity implements Button.OnClickListen
         String email = edit_email.getText().toString().trim();
         String phone = edit_phone.getText().toString().trim();
         boolean validationError = false;
-        StringBuilder validationErrorMessage = new StringBuilder(getString(R.string.error_intro));
-        if(!validateInput(id,0)) {
+        if(!Utils.validateInput(id, 0)) {
             validationError =true;
             edit_id.requestFocus();
-            Toast.makeText(this, validationErrorMessage.append(getString(R.string.invalid_id)), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.invalid_id), Toast.LENGTH_SHORT).show();
             Log.e("Input Error", "Invalid ID");
         }
-        if(!validateInput(pass,1)) {
+        if(!Utils.validateInput(pass, 1)) {
             validationError =true;
             edit_pass.requestFocus();
-            Toast.makeText(this, validationErrorMessage.append(getString(R.string.invalid_pass)), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,  getResources().getString(R.string.invalid_pass), Toast.LENGTH_SHORT).show();
             Log.e("Input Error", "Invalid Password");
         }
-        if(!validateInput(email,2)) {
+        if(!Utils.validateInput(email, 2)) {
             validationError=true;
             edit_email.requestFocus();
-            Toast.makeText(this, validationErrorMessage.append(getString(R.string.invalid_email)), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,  getResources().getString(R.string.invalid_email), Toast.LENGTH_SHORT).show();
             Log.e("Input Error", "Invalid Email");
         }
         if(name.length()==0 ){
             validationError=true;
             edit_name.requestFocus();
-            Toast.makeText(this, validationErrorMessage.append(getString(R.string.invalid_name)), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,  getResources().getString(R.string.invalid_name), Toast.LENGTH_SHORT).show();
             Log.e("Input Error", "Invalid Email");
         }
         if(!validationError) {
@@ -116,43 +120,25 @@ public class SignupActivity extends BaseActivity implements Button.OnClickListen
             progressDialog.show();
             String encode = En_Decrypt.toHex(id);
             USER_ID=encode;
-            connection(id,pass,email,encrypt_name,phone);
+            connection(id, pass, email, encrypt_name, phone);
 
         }
     }
 
     private void connection(String id, String pass, String email, String name, String phone) {
         NetworkConnection connection =new NetworkConnection();
-        String URL ="http://service-phongtest.rhcloud.com/rest_web_service/register/user?id="+id+
+        String URL ="http://medicare1-phongtest.rhcloud.com/rest_web_service/register/user?id="+id+
                 "&password="+pass+
                 "&name="+name+
                 "&email="+email+
                 "&phone="+phone+"";
         connection.execute(URL);
+
+
+
     }
 
-    public boolean validateInput(String input,int type){
-        if(input.length()==0)
-            return false;
-        for(int i=0;i<input.length();i++) {
-            switch (type){
-                case 0: //validate id input( letter or digit) , max =15 chars
-                    final String namePattern = "((?=.*[a-zA-Z0-9]).{6,20})";
-                    if(!input.matches(namePattern)) {return false;}
-                    break;
-                case 1: //validate password ( must have letter and digit), min = 6 chars
-                    final String passPattern = "((?=.*\\d)(?=.*[a-z]).{6,20})";
-                    if(!input.matches(passPattern)){return false;}
-                    break;
-                case 2: //validate email ( mail domain: abc@xyz.com)
-                    final String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-                    if(!input.matches(emailPattern)){return false;}
-                    break;
-            }
 
-        }
-        return true;
-    }
     public class NetworkConnection extends AsyncTask<String, Void, JSONObject> {
 
         private final static String mLogTag = "Medi-Care";
@@ -205,10 +191,14 @@ public class SignupActivity extends BaseActivity implements Button.OnClickListen
         try {
             boolean status = jsonObject.getBoolean("status");
             if(status) {
+                String id = edit_id.getText().toString().trim();
+                String pass = edit_pass.getText().toString();
+                currentUser.setCurrentUser(id,pass);
                 String token = jsonObject.getString("token");
                 DbOperations dp = new DbOperations(this);
-                Log.d("medicare",USER_ID);
-                dp.putToken(dp,USER_ID,token);
+                Log.d("medicare", USER_ID);
+                dp.putToken(dp, USER_ID, token);
+
                 Toast.makeText(this, getResources().getString(R.string.signup_success), Toast.LENGTH_SHORT).show();
                 Intent t = new Intent(SignupActivity.this, MainActivity.class);
                 t.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

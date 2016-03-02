@@ -1,10 +1,59 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:agendaCalendar="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.phongnguyen93.medicare.fragments.ThirdFragment">
+    android:background="@color/icons"
+    tools:context="com.phongnguyen93.medicare.fragments.ThirdFragment"
+    android:weightSum="1">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        <RelativeLayout
+            android:id="@+id/button_content"
+            android:layout_width="match_parent"
 
-</FrameLayout>
+            android:layout_height="0dp"
+            android:layout_weight="0.07">
+
+            <TextView
+                android:id="@+id/action_today"
+                android:layout_margin="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="@string/action_today"
+                android:textAllCaps="true"
+                android:textColor="@color/primary"
+                android:textSize="15sp" />
+
+            <Spinner
+                style="Custom.Spinner"
+                android:layout_margin="4dp"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:prompt="@string/spinner_title"
+                />
+        </RelativeLayout>
+
+        <com.phongnguyen93.medicare.calendarview.WeekView
+            android:layout_weight="0.93"
+            android:id="@+id/weekView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:columnGap="8dp"
+            app:dayBackgroundColor="#05000000"
+            app:eventTextColor="@android:color/white"
+            app:headerColumnBackground="#ffffffff"
+            app:headerColumnPadding="8dp"
+            app:headerColumnTextColor="#8f000000"
+            app:headerRowBackgroundColor="#ffefefef"
+            app:headerRowPadding="12dp"
+            app:hourHeight="60dp"
+            app:noOfVisibleDays="3"
+            app:textSize="12sp"
+            app:todayBackgroundColor="#1848adff" />
+
+</LinearLayout>

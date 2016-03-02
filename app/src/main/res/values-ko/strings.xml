@@ -75,4 +75,15 @@
     <string name="edittext_dr_phone">Phone</string>
     <string name="edittext_dr_email">Email</string>
     <string name="edittext_dr_license">Licencse</string>
+    <string name="cancel">cancel</string>
+    <string name="done">done</string>
+    <string name="booking_success">Your booking has been sent to doctor</string>
+    <string name="booking_fail">Booking fail:</string>
+    <string name="booking_helper">Notice : Email and phone must be available for contact</string>
+    <string name="set">Set</string>
+    <string name="time_selected">Selected time</string>
+    <string name="calendar_hint">Select booking date</string>
+    <string name="action_today">Today</string>
+    <string name="action_dayview">Day view</string>
+    <string name="action_weekview">Week view</string>
 </resources>

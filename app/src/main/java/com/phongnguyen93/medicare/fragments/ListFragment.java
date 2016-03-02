@@ -3,15 +3,13 @@ package com.phongnguyen93.medicare.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +23,8 @@ import com.phongnguyen93.medicare.activities.ProfileActivity;
 import com.phongnguyen93.medicare.adapters.DoctorListAdapter;
 import com.phongnguyen93.medicare.json.JSONArrayRequest;
 import com.phongnguyen93.medicare.json.JSONParse;
-import com.phongnguyen93.medicare.pojo.Doctor;
+import com.phongnguyen93.medicare.maps.LocationService;
+import com.phongnguyen93.medicare.model.Doctor;
 
 import org.json.JSONArray;
 
@@ -45,12 +44,13 @@ public class ListFragment extends Fragment implements JSONArrayRequest.AsyncResp
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private LatLng myLocation;
+    private Context context;
     private LinearLayoutManager mLayoutManager;
     // TODO: Rename and change types of parameters
     private UltimateRecyclerView rvContacts;
     private ArrayList<Doctor> doctors;
     private OnFragmentInteractionListener mListener;
-    private int limit = 5;
+    private int limit = 20;
     private DoctorListAdapter adapter=null;
 
     /**
@@ -87,11 +87,11 @@ public class ListFragment extends Fragment implements JSONArrayRequest.AsyncResp
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
+        context = getActivity().getApplicationContext();
         View v = inflater.inflate(R.layout.list_layout, container, false);
-        connection(limit);
+        requestDoctorList(limit);
         rvContacts = (UltimateRecyclerView) v.findViewById(R.id.rvContacts);
-        mLayoutManager = new ScrollSmoothLineaerLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false, 300);
+        mLayoutManager = new ScrollSmoothLineaerLayoutManager(context, LinearLayoutManager.VERTICAL, false, 300);
         // Attach the adapter to the recyclerview to populate items
         // Set layout manager to position the items
         rvContacts.setLayoutManager(mLayoutManager);
@@ -118,8 +118,8 @@ public class ListFragment extends Fragment implements JSONArrayRequest.AsyncResp
     }
 
 
-    private void connection(int limit) {
-        String request = "http://service-phongtest.rhcloud.com/rest_web_service/service/getalldoctor?limit=" + limit + "";
+    private void requestDoctorList(int limit) {
+        String request = "http://medicare1-phongtest.rhcloud.com/rest_web_service/service/getalldoctor?limit=" + limit + "";
         JSONArrayRequest jsonArrayRequest = new JSONArrayRequest(this);
         jsonArrayRequest.execute(request);
     }
@@ -145,26 +145,12 @@ public class ListFragment extends Fragment implements JSONArrayRequest.AsyncResp
 
     @Override
     public void processFinish(JSONArray jsonArray) {
-        myLocation = currentLocation();
-        doctors = JSONParse.doctorList(jsonArray, getContext(), myLocation);
+        myLocation = LocationService.getCurrentLocation();
+        doctors = JSONParse.doctorList(jsonArray,context, myLocation);
         adapter = new DoctorListAdapter(doctors);
         rvContacts.setAdapter(adapter);
-        rvContacts.enableLoadmore();
-        adapter.setCustomLoadMoreView(LayoutInflater.from(getActivity().getApplicationContext())
-                .inflate(R.layout.custom_bottom_progressbar, null));
-        rvContacts.setOnLoadMoreListener(new UltimateRecyclerView.OnLoadMoreListener() {
-            @Override
-            public void loadMore(int itemsCount, final int maxLastVisiblePosition) {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        limit += 5;
-                        connection(limit);
-                        //mLayoutManager.scrollToPosition(maxLastVisiblePosition);
-                    }
-                }, 2500);
-            }
-        });
+
+
     }
 
 
@@ -184,12 +170,6 @@ public class ListFragment extends Fragment implements JSONArrayRequest.AsyncResp
         public void onFragmentInteraction(Uri uri);
     }
 
-    private LatLng currentLocation() {
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        Location lastLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-        LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-        return latLng;
-    }
+
 
 }

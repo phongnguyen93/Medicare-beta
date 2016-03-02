@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="BaseTheme" parent="@style/Theme.AppCompat.NoActionBar">
@@ -38,6 +38,10 @@
         <item name="android:textColor">@color/icons</item>
         <item name="android:elevation">4dp</item>
     </style>
+    <style name="Custom.Spinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@color/icons</item>
+        <item name="android:textColor">@color/primary</item>
+    </style>
     <style name="raised_button_secondary">
         <item name="android:background">@drawable/raised_button_secondary</item>
         <item name="android:textColor">@color/primary</item>
@@ -47,5 +51,32 @@
     <style name="DefaultTextView">
         <item name="android:fontFamily">sans-serif</item>
     </style>
+    <style name="Scroller">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/icons</item>
+        <item name="android:layout_marginLeft">48dp</item>
+        <item name="android:layout_marginRight">48dp</item>
+    </style>
+    <style name="CalendarTitle">
+        <item name="android:textSize">@dimen/calendar_text_medium</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
+    <style name="CalendarCell">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAlignment" tools:targetApi="jelly_bean_mr1">center</item>
+    </style>
+
+    <style name="CalendarCell.DayHeader">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textSize">@dimen/calendar_text_small</item>
+    </style>
+
+    <style name="CalendarCell.CalendarDate">
+        <item name="android:textSize">@dimen/calendar_text_medium</item>
+        <item name="android:clickable">true</item>
+    </style>
 </resources>

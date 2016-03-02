@@ -13,9 +13,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.Marker;
 import com.phongnguyen93.medicare.R;
-/**
- * A fragment that launches other parts of the demo application.
- */
+
 public class MapFragments extends Fragment {
 
     MapView mMapView;

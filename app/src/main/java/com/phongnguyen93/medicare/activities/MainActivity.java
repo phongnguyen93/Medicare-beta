@@ -22,10 +22,13 @@ import android.view.View;
 
 import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.database.DbOperations;
+import com.phongnguyen93.medicare.extras.CurrentUser;
+import com.phongnguyen93.medicare.extras.En_Decrypt;
 import com.phongnguyen93.medicare.fragments.ListFragment;
 import com.phongnguyen93.medicare.fragments.SecondFragment;
 import com.phongnguyen93.medicare.fragments.TestFragment;
 import com.phongnguyen93.medicare.fragments.ThirdFragment;
+import com.phongnguyen93.medicare.maps.LocationService;
 import com.phongnguyen93.medicare.maps.MapOperations;
 
 import org.json.JSONException;
@@ -60,6 +63,8 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     private ViewPagerAdapter mAdapter;
     private boolean SERVER_TOKEN_REMOVED=false;
     private SpotsDialog progressDialog;
+    private CurrentUser currentUser;
+    private  LocationService locationService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +75,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        currentUser = new CurrentUser(getApplicationContext());
         // Find our drawer view
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         nvDrawer = (NavigationView) findViewById(R.id.nvView);
@@ -78,6 +83,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         setupDrawerContent(nvDrawer);
         drawerToggle = setupDrawerToggle();
         mDrawer.setDrawerListener(drawerToggle);
+        locationService = new LocationService(getBaseContext());
         setupTabs();
     }
 
@@ -196,7 +202,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
         int icons[] = {R.drawable.ic_format_list_bulleted_white_24dp,
                 R.drawable.ic_map_white_24dp,
-                R.drawable.ic_favorite_white_24dp};
+                R.drawable.ic_event_note_white_24dp};
 
         final String[] title={getResources().getString(R.string.tab_list),getResources().getString(R.string.tab_map),getResources().getString(R.string.tab_fav)};
         FragmentManager fragmentManager;
@@ -275,6 +281,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         }while (CR.moveToNext());
         removeServerToken(id, token);
         removeLocalToken(id,token);
+        currentUser.removeCurrentUser(En_Decrypt.fromHex(id));
         Intent t = new Intent(MainActivity.this,WelcomeActivity.class);
         t.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(t);
@@ -282,14 +289,13 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
     private void removeServerToken(String id, String token) {
         NetworkConnection connection = new NetworkConnection();
-        String URL = "http://service-phongtest.rhcloud.com/rest_web_service/signout/user?id="+id+"&token="+token+"";
+        String URL = "http://medicare1-phongtest.rhcloud.com/rest_web_service/signout/user?id="+id+"&token="+token+"";
         connection.execute(URL);
     }
     private void removeLocalToken(String id, String token) {
         DbOperations dp = new DbOperations(this);
         dp.removeToken(dp,id,token);
     }
-
 
     public class NetworkConnection extends AsyncTask<String, Void, Boolean> {
 

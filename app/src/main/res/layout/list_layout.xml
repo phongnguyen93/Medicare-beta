@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     >
 
-
     <com.marshalchen.ultimaterecyclerview.UltimateRecyclerView
+        android:id="@+id/rvContacts"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical" />
+
+
+    <TextView
+        android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/rvContacts"
-        >
-    </com.marshalchen.ultimaterecyclerview.UltimateRecyclerView>
-</RelativeLayout>
+        android:gravity="center"
+        android:text="No Records"
+        android:visibility="gone" />
+</LinearLayout>

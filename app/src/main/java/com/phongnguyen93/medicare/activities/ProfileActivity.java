@@ -1,5 +1,6 @@
 package com.phongnguyen93.medicare.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -8,7 +9,7 @@ import android.widget.TextView;
 
 import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.extras.FloatingActionButton;
-import com.phongnguyen93.medicare.pojo.Doctor;
+import com.phongnguyen93.medicare.model.Doctor;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 public class ProfileActivity extends AppCompatActivity implements FloatingActionButton.OnClickListener {
@@ -51,6 +52,12 @@ public class ProfileActivity extends AppCompatActivity implements FloatingAction
 
     @Override
     public void onClick(View v) {
-        
+        switch (v.getId()) {
+            case R.id.fab_1:
+                Intent t = new Intent(ProfileActivity.this, BookingActivity.class);
+                t.putExtra("doctor",getIntent().getParcelableExtra("doctor"));
+                startActivity(t);
+                break;
+        }
     }
 }

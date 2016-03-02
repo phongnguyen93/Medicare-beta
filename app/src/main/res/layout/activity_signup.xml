@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="@drawable/base_panel"
+        android:background="@drawable/base_panel_bottom_divider"
         android:orientation="vertical"
         android:padding="16dp"
         android:paddingLeft="16dp"

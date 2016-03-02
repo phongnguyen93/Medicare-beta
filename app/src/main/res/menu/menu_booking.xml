@@ -2,6 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.phongnguyen93.medicare.activities.BookingActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+    <item
+        android:id="@+id/btn_cancel"
+        android:icon="@drawable/ic_clear_white_24dp"
+        android:title="@string/cancel"
+        app:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/btn_done"
+        android:icon="@drawable/ic_done_white_24dp"
+        android:title="@string/done"
+        app:showAsAction="ifRoom|withText"/>
 </menu>
