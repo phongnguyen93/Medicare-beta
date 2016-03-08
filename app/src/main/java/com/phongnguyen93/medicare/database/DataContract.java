@@ -75,6 +75,8 @@ public class DataContract {
         public static final String COLUMN_USER_IMAGE = "user_image";
         // User birth day column
         public static final String COLUMN_USER_BDAY = "user_bday";
+        // User session token
+        public static final String COLUMN_USER_TOKEN = "user_token";
 
         public static Uri buildUserUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -119,7 +121,7 @@ public class DataContract {
         // Doctor work time column
         public static final String COLUMN_DR_WORKTIME = "dr_worktime";
         // Doctor location ( lat, lng) column
-        public static final String COLUMN_DR_LOCATIOn = "dr_location";
+        public static final String COLUMN_DR_LOCATION = "dr_location";
 
 
         public static Uri buildDoctorUri(long id) {
@@ -187,5 +189,35 @@ public class DataContract {
         }
     }
 
+    /* Inner class that defines the table contents of the USER LOG table */
+    public static final class UserLogEntry implements BaseColumns {
 
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_USER_LOG).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USER_LOG;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USER_LOG;
+
+        // Table name
+        public static final String TABLE_NAME = "user_log";
+
+        /* Columns name */
+        // Log user column
+        public static final String COLUMN_LOG_USER = "log_user";
+        // Log doctor if has column
+        public static final String COLUMN_LOG_DOCTOR = "user_email";
+        // Log address column
+        public static final String COLUMN_LOG_ADDRESS = "user_address";
+        // Log location (lat,lng) column
+        public static final String COLUMN_LOG_LOCATION = "use_phone";
+        // Log date column
+        public static final String COLUMN_LOG_DATE = "user_image";
+
+
+        public static Uri buildUserLogUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
 }
