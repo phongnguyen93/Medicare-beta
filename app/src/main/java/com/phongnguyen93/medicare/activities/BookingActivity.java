@@ -13,14 +13,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.phongnguyen93.medicare.R;
-import com.phongnguyen93.medicare.calendarpicker.CalendarPickerView;
-import com.phongnguyen93.medicare.dateslider.DateSlider;
-import com.phongnguyen93.medicare.dateslider.TimeSlider;
 import com.phongnguyen93.medicare.extras.CurrentUser;
 import com.phongnguyen93.medicare.extras.Utils;
 import com.phongnguyen93.medicare.json.JSONObjectRequest;
 import com.phongnguyen93.medicare.model.Doctor;
 import com.phongnguyen93.medicare.model.User;
+import com.phongnguyen93.medicare.ui_view.calendarpicker.CalendarPickerView;
+import com.phongnguyen93.medicare.ui_view.dateslider.DateSlider;
+import com.phongnguyen93.medicare.ui_view.dateslider.TimeSlider;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.json.JSONException;
@@ -33,8 +33,10 @@ import java.util.Date;
 import java.util.Locale;
 
 public class BookingActivity extends BaseActivity implements View.OnTouchListener,JSONObjectRequest.AsyncResponse, View.OnClickListener {
-    MaterialEditText edit_date,edit_time,edit_drName,edit_phone,edit_email;
+    private static final int DATE_SLIDER_DIALOG_ID = 1;
+    private static final int TIME_SLIDER_DIALOG_ID = 2;
     final Calendar myCalendar = Calendar.getInstance();
+    MaterialEditText edit_date, edit_time, edit_drName, edit_phone, edit_email;
     private Doctor doctor;
     private User user;
     private CurrentUser currentUser;
@@ -42,8 +44,13 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
     private String inserTime;
     private AlertDialog theDialog;
     private CalendarPickerView dialogView;
-    private static final int DATE_SLIDER_DIALOG_ID = 1;
-    private static final int TIME_SLIDER_DIALOG_ID = 2;
+    private DateSlider.OnDateSetListener mTimeSetListener =
+            new DateSlider.OnDateSetListener() {
+                public void onDateSet(DateSlider view, Calendar selectedDate) {
+                    // update the dateText view with the corresponding date
+                    updateLabel(selectedDate.getTime(), "time");
+                }
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,8 +148,6 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
         jsonObjectRequest.execute(URL);
     }
 
-
-
     @Override
     public void processFinish(JSONObject jsonObject) {
         if(jsonObject!= null)
@@ -220,6 +225,7 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
         }
         return null;
     }
+
     private ArrayList<String> getWorktime(String worktime){
         ArrayList<String> mWorktime = new ArrayList<>();
         String[] split = worktime.split(",");
@@ -228,14 +234,6 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
         }
         return mWorktime;
     }
-
-    private DateSlider.OnDateSetListener mTimeSetListener =
-            new DateSlider.OnDateSetListener() {
-                public void onDateSet(DateSlider view, Calendar selectedDate) {
-                    // update the dateText view with the corresponding date
-                  updateLabel(selectedDate.getTime(),"time");
-                }
-            };
 
     private void showCalendarInDialog(String title, int layoutResId) {
         final View dialogLayout;

@@ -1,16 +1,22 @@
 package com.phongnguyen93.medicare.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -19,17 +25,21 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.phongnguyen93.medicare.R;
+import com.phongnguyen93.medicare.adapters.MyPageViewAdapter;
 import com.phongnguyen93.medicare.database.DbOperations;
 import com.phongnguyen93.medicare.extras.CurrentUser;
 import com.phongnguyen93.medicare.extras.En_Decrypt;
+import com.phongnguyen93.medicare.extras.NonSwipeableViewPager;
 import com.phongnguyen93.medicare.fragments.ListFragment;
 import com.phongnguyen93.medicare.fragments.SecondFragment;
 import com.phongnguyen93.medicare.fragments.TestFragment;
 import com.phongnguyen93.medicare.fragments.ThirdFragment;
 import com.phongnguyen93.medicare.maps.LocationService;
 import com.phongnguyen93.medicare.maps.MapOperations;
+import com.phongnguyen93.medicare.ui_view.tabs.SlidingTabLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,32 +49,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 
 import dmax.dialog.SpotsDialog;
-import it.neokree.materialtabs.MaterialTab;
-import it.neokree.materialtabs.MaterialTabHost;
-import it.neokree.materialtabs.MaterialTabListener;
 
 public class MainActivity extends BaseActivity implements ListFragment.OnFragmentInteractionListener,
         SecondFragment.OnFragmentInteractionListener,
-        ThirdFragment.OnFragmentInteractionListener, View.OnClickListener, MaterialTabListener {
-    public static final int TAB_SEARCH_RESULTS = 0;
-    //int corresponding to our 1st tab corresponding to the Fragment where box office hits are dispalyed
-    public static final int TAB_HITS = 1;
-    //int corresponding to our 2nd tab corresponding to the Fragment where upcoming movies are displayed
-    public static final int TAB_UPCOMING = 2;
-    public static final int TAB_COUNT = 3;
+        ThirdFragment.OnFragmentInteractionListener, View.OnClickListener, ViewPager.OnPageChangeListener {
+    public static final int LIST_FRAGMENT_ID = 0;
+    public static final int MAP_FRAGMENT_ID = 1;
+    public static final int SCHEDULE_FRAGMENT_ID = 2;
+    public static final int ALERT_SNACKBAR = 0;
+    public static final int WARNING_SNACKBAR = 1;
+    public static final int INFO_SNACKBAR = 2;
     private DrawerLayout mDrawer;
     private NavigationView nvDrawer;
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
-    private MaterialTabHost mTabHost;
-    private ViewPager mPager;
-    private ViewPagerAdapter mAdapter;
-    private boolean SERVER_TOKEN_REMOVED=false;
+    private NonSwipeableViewPager mPager;
     private SpotsDialog progressDialog;
     private CurrentUser currentUser;
     private  LocationService locationService;
+    private Snackbar snackbarAlert, snackbarWarning, snackbarInfo;
+    private int currentPage = LIST_FRAGMENT_ID;
+    // The BroadcastReceiver that tracks network connectivity changes.
+    private NetworkReceiver receiver = new NetworkReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,10 +81,90 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         setContentView(R.layout.activity_main);
         progressDialog = new SpotsDialog(this, R.style.Custom);
         progressDialog.setCancelable(false);
+
+
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //set up needed services
         currentUser = new CurrentUser(getApplicationContext());
+        locationService = new LocationService(getBaseContext());
+        setupDrawer();
+        setupConnCheck();
+        setupTabs();
+    }
+
+
+    //display snackbar depend on @param type
+    private void displaySnackbar(int type) {
+        View layout = findViewById(R.id.main_layout);
+        View sbView;
+        TextView textView;
+        switch (type) {
+            //display disconnection alert snack bar
+            case ALERT_SNACKBAR:
+                snackbarAlert = Snackbar.make(layout, getResources().getString(R.string.disconnect_noti), Snackbar.LENGTH_INDEFINITE)
+                        .setAction(getResources().getString(R.string.empty_button), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                startActivity(new Intent(Settings.ACTION_SETTINGS));
+
+                            }
+                        })
+                        .setActionTextColor(Color.WHITE);
+                sbView = snackbarAlert.getView();
+                textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                textView.setTextColor(Color.WHITE);
+                sbView.setBackgroundColor(Color.RED);
+                snackbarAlert.show();
+                break;
+            //display slow connection warning snack bar
+            case WARNING_SNACKBAR:
+                snackbarWarning = Snackbar.make(layout, getResources().getString(R.string.slow_connect_noti), Snackbar.LENGTH_LONG);
+                sbView = snackbarWarning.getView();
+                textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                textView.setTextColor(Color.WHITE);
+                sbView.setBackgroundColor(Color.YELLOW);
+                snackbarWarning.show();
+                break;
+            //display confirm connected success snackbar
+            case INFO_SNACKBAR:
+                snackbarInfo = Snackbar.make(layout, getResources().getString(R.string.success_connect_noti), Snackbar.LENGTH_SHORT);
+                sbView = snackbarInfo.getView();
+                textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+                textView.setTextColor(Color.WHITE);
+                sbView.setBackgroundColor(getResources().getColor(R.color.accent));
+                snackbarInfo.show();
+                break;
+        }
+
+
+    }
+
+    //register the NetworkReciver to check connection change
+    private void setupConnCheck() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        receiver = new NetworkReceiver();
+        this.registerReceiver(receiver, filter);
+        receiver.goAsync();
+    }
+
+
+    //Handle the connection change
+    public void doCheckConn(boolean isConnected, boolean isSlowConn) {
+
+        if (isConnected && isSlowConn) displaySnackbar(WARNING_SNACKBAR);
+        if (!isConnected)
+            displaySnackbar(ALERT_SNACKBAR);
+        else {
+            if (snackbarAlert != null) {
+                snackbarAlert.dismiss();
+            }
+        }
+    }
+
+    //Set up navigation drawer
+    private void setupDrawer() {
         // Find our drawer view
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         nvDrawer = (NavigationView) findViewById(R.id.nvView);
@@ -83,9 +172,31 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         setupDrawerContent(nvDrawer);
         drawerToggle = setupDrawerToggle();
         mDrawer.setDrawerListener(drawerToggle);
-        locationService = new LocationService(getBaseContext());
-        setupTabs();
     }
+
+    /* This method create Sliding Tab Layout
+     * Set up View Pager for Sliding Tab layout
+     * Create fragment list to add into layout
+     */
+    private void setupTabs() {
+        //create fragments list
+        ArrayList<Fragment> fragments = new ArrayList<>();
+        fragments.add(new ListFragment());
+        fragments.add(new MapOperations());
+        fragments.add(new ThirdFragment());
+        //setup ViewPager for tab
+        mPager = (NonSwipeableViewPager) findViewById(R.id.viewPager);
+        MyPageViewAdapter myPageViewAdapter = new MyPageViewAdapter(getApplicationContext(),
+                getSupportFragmentManager(), fragments);
+        mPager.setAdapter(myPageViewAdapter);
+        //setup Tab
+        SlidingTabLayout mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.tab_layout);
+        mSlidingTabLayout.setCustomTabView(R.layout.custom_tab, 0);
+        mSlidingTabLayout.setDistributeEvenly(true);
+        mSlidingTabLayout.setViewPager(mPager);
+        mSlidingTabLayout.setOnPageChangeListener(this);
+    }
+
 
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
@@ -103,11 +214,11 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
                 });
     }
 
+    //Handle the action on drawer item select
     public void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the planet to show based on
         // position
         if (menuItem.getItemId() == R.id.nav_exit){
-
             signOut();
         }else {
             Fragment fragment = null;
@@ -146,6 +257,44 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         mDrawer.closeDrawers();
     }
 
+    /**
+     * This method execute the sign out action which remove current user & session tokens from local
+     * and server database, then navigate to welcome screen
+     */
+    private void signOut() {
+        //remove local tokens session
+        String token, id;
+        DbOperations dp = new DbOperations(this);
+        Cursor CR = dp.getToken(dp);
+        CR.moveToFirst();
+        do {
+            id = CR.getString(0);
+            token = CR.getString(1);
+        } while (CR.moveToNext());
+        removeLocalToken(id, token);
+        //remove server token
+        removeServerToken(id, token);
+        //remove current user
+        currentUser.removeCurrentUser(En_Decrypt.fromHex(id));
+        //navigate to welcome screen
+        Intent t = new Intent(MainActivity.this, WelcomeActivity.class);
+        t.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(t);
+    }
+
+    //This method remove session token from server db
+    private void removeServerToken(String id, String token) {
+        NetworkConnection connection = new NetworkConnection();
+        String URL = "http://medicare1-phongtest.rhcloud.com/rest_web_service/signout/user?id=" + id + "&token=" + token + "";
+        connection.execute(URL);
+    }
+
+    //This method remove session token from local db
+    private void removeLocalToken(String id, String token) {
+        DbOperations dp = new DbOperations(this);
+        dp.removeToken(dp, id, token);
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -176,6 +325,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
     }
 
+
     @Override
     public void onFragmentInteraction(Uri uri) {
 
@@ -183,120 +333,41 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
     @Override
     public void onClick(View view) {
-        Fragment fragment = (Fragment) mAdapter.instantiateItem(mPager, mPager.getCurrentItem());
+
     }
-    @Override
-    public void onTabSelected(MaterialTab materialTab) {
-        //when a Tab is selected, update the ViewPager to reflect the changes
-        mPager.setCurrentItem(materialTab.getPosition());
-    }
+
 
     @Override
-    public void onTabReselected(MaterialTab materialTab) {
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    //Change action bar title on tab strip selected
+    @Override
+    public void onPageSelected(int position) {
+        switch (position) {
+            case LIST_FRAGMENT_ID:
+                currentPage = LIST_FRAGMENT_ID;
+                this.setTitle(getResources().getString(R.string.tab_list_title));
+                break;
+            case MAP_FRAGMENT_ID:
+                currentPage = MAP_FRAGMENT_ID;
+                this.setTitle(getResources().getString(R.string.tab_map_title));
+                break;
+            case SCHEDULE_FRAGMENT_ID:
+                currentPage = SCHEDULE_FRAGMENT_ID;
+                this.setTitle(getResources().getString(R.string.tab_schedule_title));
+                break;
+        }
     }
 
     @Override
-    public void onTabUnselected(MaterialTab materialTab) {
-    }
-    private class ViewPagerAdapter extends FragmentStatePagerAdapter {
-
-        int icons[] = {R.drawable.ic_format_list_bulleted_white_24dp,
-                R.drawable.ic_map_white_24dp,
-                R.drawable.ic_event_note_white_24dp};
-
-        final String[] title={getResources().getString(R.string.tab_list),getResources().getString(R.string.tab_map),getResources().getString(R.string.tab_fav)};
-        FragmentManager fragmentManager;
-
-        public ViewPagerAdapter(FragmentManager fm) {
-            super(fm);
-            fragmentManager = fm;
-        }
-
-        public Fragment getItem(int num) {
-            Fragment fragment = null;
-//            L.m("getItem called for " + num);
-            switch (num) {
-                case TAB_SEARCH_RESULTS:
-                    fragment = ListFragment.newInstance("", "");
-                    break;
-                case TAB_HITS:
-                    fragment = new  MapOperations();
-                    break;
-                case TAB_UPCOMING:
-                    fragment = ThirdFragment.newInstance("", "");
-                    break;
-            }
-            return fragment;
-
-        }
-
-        @Override
-        public int getCount() {
-            return TAB_COUNT;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return getResources().getStringArray(R.array.tabs)[position];
-        }
-
-        private Drawable getIcon(int position) {
-            return getResources().getDrawable(icons[position]);
-        }
-        private String getTabTitle(int position) {
-            return title[position];
-        }
+    public void onPageScrollStateChanged(int state) {
 
     }
-    private void setupTabs() {
-        final String[] title={getResources().getString(R.string.tab_list),getResources().getString(R.string.tab_map),getResources().getString(R.string.tab_fav)};
-        mTabHost = (MaterialTabHost) findViewById(R.id.materialTabHost);
-        mPager = (ViewPager) findViewById(R.id.viewPager);
-        mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        mPager.setAdapter(mAdapter);
-        //when the page changes in the ViewPager, update the Tabs accordingly
-        mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                mTabHost.setSelectedNavigationItem(position);
 
-            }
-        });
-        //Add all the Tabs to the TabHost
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            mTabHost.addTab(
-                    mTabHost.newTab()
-                            .setIcon(mAdapter.getIcon(i))
-                            .setTabListener(this));
-        }
-    }
-    private void signOut() {
-        String token,id;
-        DbOperations dp = new DbOperations(this);
-        Cursor CR = dp.getToken(dp);
-        CR.moveToFirst();
-        do{
-            id= CR.getString(0);
-            token= CR.getString(1);
-        }while (CR.moveToNext());
-        removeServerToken(id, token);
-        removeLocalToken(id,token);
-        currentUser.removeCurrentUser(En_Decrypt.fromHex(id));
-        Intent t = new Intent(MainActivity.this,WelcomeActivity.class);
-        t.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(t);
-    }
 
-    private void removeServerToken(String id, String token) {
-        NetworkConnection connection = new NetworkConnection();
-        String URL = "http://medicare1-phongtest.rhcloud.com/rest_web_service/signout/user?id="+id+"&token="+token+"";
-        connection.execute(URL);
-    }
-    private void removeLocalToken(String id, String token) {
-        DbOperations dp = new DbOperations(this);
-        dp.removeToken(dp,id,token);
-    }
-
+    //Make a API call and receive data
     public class NetworkConnection extends AsyncTask<String, Void, Boolean> {
 
         private final static String mLogTag = "Medi-Care";
@@ -342,5 +413,48 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         protected void onPostExecute(Boolean isRemoved) {
 
         }
+    }
+
+    /**
+     * This BroadcastReceiver intercepts the android.net.ConnectivityManager.CONNECTIVITY_ACTION,
+     * which indicates a connection change. It checks whether the device is connected or not, or on
+     * a slow connection
+     */
+    private class NetworkReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isConnected = false;
+            boolean isSlowConn = false;
+            ConnectivityManager connMgr =
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+            NetworkInfo.DetailedState detailedState;
+            if (networkInfo != null) {
+                detailedState = networkInfo.getDetailedState();
+                Log.d("Network state: ", detailedState.toString());
+                //check network info type of connection
+                if (detailedState == NetworkInfo.DetailedState.CONNECTED) {
+                    if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE
+                            || networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                        isConnected = true;
+                    }
+                }
+                //check disconnection
+                if (detailedState == NetworkInfo.DetailedState.DISCONNECTED
+                        || detailedState == NetworkInfo.DetailedState.FAILED
+                        || detailedState == NetworkInfo.DetailedState.SUSPENDED
+                        || detailedState == NetworkInfo.DetailedState.BLOCKED)
+                    isConnected = false;
+                //check slow connection or disconnection
+                if (isConnected) {
+                    //check slow connection
+                    if (detailedState == NetworkInfo.DetailedState.IDLE
+                            || detailedState == NetworkInfo.DetailedState.CONNECTING)
+                        isSlowConn = true;
+                }
+            }
+            doCheckConn(isConnected, isSlowConn);
+        }
+
     }
 }

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/icons">
+
+    <TextView
+        android:id="@+id/dateSliderTitleText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:background="@color/primary"
+        android:gravity="center"
+        android:text="@string/dateSliderTitle"
+        android:textColor="@color/icons"
+        android:textSize="16sp"
+        android:textStyle="bold">
+
+    </TextView>
+    <ImageView
+        android:layout_below="@+id/mWorktimeText"
+        android:id="@+id/left_arrow"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_chevron_left_black_36dp"
+        android:tint="@color/primary" />
+
+    <ImageView
+        android:layout_below="@+id/mWorktimeText"
+        android:id="@+id/right_arrow"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_chevron_right_black_36dp"
+        android:tint="@color/primary" />
+
+    <com.phongnguyen93.medicare.ui_view.dateslider.SliderContainer
+        android:id="@+id/dateSliderContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mWorktimeText">
+
+        <com.phongnguyen93.medicare.ui_view.dateslider.ScrollLayout
+            android:id="@+id/hour_slider"
+            style="@style/Scroller"
+            app:childWidth="90dp"
+            app:labelerClass="com.phongnguyen93.medicare.dateslider.labeler.HourLabeler"
+            app:labelerFormat="%tk" />
+
+
+
+        <com.phongnguyen93.medicare.ui_view.dateslider.ScrollLayout
+            android:id="@+id/minute_slider"
+            style="@style/Scroller"
+            android:background="@drawable/base_panel_top_divider"
+            app:childWidth="45dp"
+            app:labelerClass="com.phongnguyen93.medicare.dateslider.labeler.MinuteLabeler"
+            app:labelerFormat="%tM" />
+
+    </com.phongnguyen93.medicare.ui_view.dateslider.SliderContainer>
+
+    <include
+        layout="@layout/dialogbuttons"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@+id/dateSliderContainer" />
+
+    <TextView
+        android:id="@+id/mWorktimeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dateSliderTitleText"
+        android:layout_gravity="center"
+        android:background="@color/icons"
+        android:gravity="center"
+        android:padding="8dp"
+        android:textColor="@color/accent"
+
+        android:textStyle="bold">
+
+    </TextView>
+
+
+</RelativeLayout>

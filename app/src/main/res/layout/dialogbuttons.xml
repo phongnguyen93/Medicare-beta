@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingRight="16dp"
+    android:paddingLeft="16dp"
+    android:id="@+id/dateSliderButLayout"
+    android:orientation="horizontal"
+    android:background="@drawable/base_panel_top_divider"
+    android:layout_width="fill_parent"
+    android:layout_height="48dp">
+    <TextView
+        android:id="@+id/dateSliderOkButton"
+        android:layout_marginRight="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textColor="@color/primary"
+        android:textAllCaps="true"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:text="@string/set"/>
+    <TextView
+        android:id="@+id/dateSliderCancelButton"
+        android:textAllCaps="true"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:textColor="@color/secondary_text"
+        android:text="@string/cancel"/>
+</LinearLayout>

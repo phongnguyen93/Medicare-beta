@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/icons">
+
+    <TextView
+        android:id="@+id/calendar_title"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/primary"
+        android:gravity="center_horizontal"
+        android:paddingTop="16dp"
+        android:text="@string/calendar_hint"
+        android:textColor="@color/icons"
+        android:textSize="16sp"
+        android:textStyle="bold">
+
+    </TextView>
+    <TextView
+        android:id="@+id/mWorkdaysText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@id/calendar_title"
+        android:padding="8dp"
+        android:textStyle="bold"
+        android:text="@string/set"
+        android:background="@drawable/base_panel_bottom_divider"
+        android:textColor="@color/accent" />
+    <com.phongnguyen93.medicare.ui_view.calendarpicker.CalendarPickerView
+        android:layout_below="@+id/mWorkdaysText"
+        android:id="@+id/calendar_view"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:background="@color/icons"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:scrollbarStyle="outsideOverlay"
+        app:tsquare_dayBackground="@drawable/my_custom_calendar_bg_selector"
+        app:tsquare_dayTextColor="@color/custom_calendar_text_selector"
+        app:tsquare_dividerColor="@color/transparent"
+        app:tsquare_headerTextColor="@color/primary"
+        app:tsquare_titleTextColor="@color/custom_calendar_text_selector" />
+
+    <TextView
+        android:id="@+id/dateSliderOkButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@+id/calendar_view"
+        android:background="@drawable/base_panel_top_divider"
+        android:gravity="center"
+        android:text="@string/set"
+        android:textAllCaps="true"
+        android:textColor="@color/primary" />
+
+
+
+</RelativeLayout>

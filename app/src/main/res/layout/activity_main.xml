@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
     <include
         layout="@layout/toolbar"
         android:layout_width="match_parent"
@@ -10,9 +12,9 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/drawer_layout"
-        android:background="@color/icons"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/icons">
 
         <!-- This LinearLayout represents the contents of the screen  -->
         <LinearLayout
@@ -21,11 +23,6 @@
             android:background="@color/base_color"
             android:orientation="vertical">
 
-            <!-- The ActionBar displayed at the top -->
-
-
-            <!-- The main content view where fragments are loaded -->
-
 
             <LinearLayout
                 android:id="@+id/container_app_bar"
@@ -33,17 +30,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <com.phongnguyen93.medicare.ui_view.tabs.SlidingTabLayout
+                    android:id="@+id/tab_layout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/primary">
 
-                <it.neokree.materialtabs.MaterialTabHost
-                    android:id="@+id/materialTabHost"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_below="@+id/app_bar"
-                    app:accentColor="@color/icons"
-                    app:hasIcons="true"
-                    app:iconColor="@color/icons"
-                    app:primaryColor="@color/primary"
-                    />
+                </com.phongnguyen93.medicare.ui_view.tabs.SlidingTabLayout>
+
             </LinearLayout>
 
 
@@ -51,7 +45,7 @@
                 android:id="@+id/viewPager"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_below="@+id/materialTabHost"
+                android:layout_below="@+id/tab_layout"
                 android:layout_weight="1" />
         </LinearLayout>
 
@@ -63,7 +57,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@color/base_color"
-            app:menu="@menu/drawer_menu"
-            app:headerLayout="@layout/nav_header"/>
+            app:headerLayout="@layout/nav_header"
+            app:menu="@menu/drawer_menu" />
     </android.support.v4.widget.DrawerLayout>
 </LinearLayout>

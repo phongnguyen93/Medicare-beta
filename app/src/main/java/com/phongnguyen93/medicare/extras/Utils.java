@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.phongnguyen93.medicare.R;
-import com.phongnguyen93.medicare.calendarview.WeekViewEvent;
 import com.phongnguyen93.medicare.model.Booking;
+import com.phongnguyen93.medicare.ui_view.calendarview.WeekViewEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;

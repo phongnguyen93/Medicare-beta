@@ -6,9 +6,10 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,16 +19,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.phongnguyen93.medicare.R;
-import com.phongnguyen93.medicare.calendarview.DateTimeInterpreter;
-import com.phongnguyen93.medicare.calendarview.MonthLoader;
-import com.phongnguyen93.medicare.calendarview.WeekView;
-import com.phongnguyen93.medicare.calendarview.WeekViewEvent;
-import com.phongnguyen93.medicare.calendarview.WeekViewLoader;
 import com.phongnguyen93.medicare.extras.CurrentUser;
 import com.phongnguyen93.medicare.json.JSONArrayRequest;
-import com.phongnguyen93.medicare.json.JSONParse;
 import com.phongnguyen93.medicare.model.Booking;
 import com.phongnguyen93.medicare.model.User;
+import com.phongnguyen93.medicare.ui_view.calendarview.DateTimeInterpreter;
+import com.phongnguyen93.medicare.ui_view.calendarview.MonthLoader;
+import com.phongnguyen93.medicare.ui_view.calendarview.WeekView;
+import com.phongnguyen93.medicare.ui_view.calendarview.WeekViewEvent;
 
 import org.json.JSONArray;
 
@@ -66,6 +65,11 @@ public class ThirdFragment extends Fragment implements
     private ArrayList<Booking> mBookings;
     private OnFragmentInteractionListener mListener;
     private String REQUEST_URL = "http://medicare-phongtest.rhcloud.com/rest_web_service/service/getallbookingbyuser?user=";
+
+    public ThirdFragment() {
+        // Required empty public constructor
+    }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -84,17 +88,18 @@ public class ThirdFragment extends Fragment implements
         return fragment;
     }
 
-    public ThirdFragment() {
-        // Required empty public constructor
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setHasOptionsMenu(true);
         // Set long press listener for events.
        // mWeekView.setEventLongPressListener(this);
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_schedule, menu);
     }
 
     @Override
@@ -104,6 +109,7 @@ public class ThirdFragment extends Fragment implements
         View v = inflater.inflate(R.layout.fragment_third, container, false);
         // Inflate the layout for this fragment
         viewHolder(v);
+
         mWeekView = (WeekView)v.findViewById(R.id.weekView);
 
         currentUser = new CurrentUser(context);
@@ -123,6 +129,7 @@ public class ThirdFragment extends Fragment implements
 
         return v;
     }
+
 
     private void requestAllBooking(String user_id){
         String request = REQUEST_URL+user_id;
@@ -256,98 +263,103 @@ public class ThirdFragment extends Fragment implements
 
     @Override
     public void processFinish(JSONArray jsonArray) {
-       setmBookings(JSONParse.bookingList(jsonArray,context));
-        Log.d("booking size", getmBookings().size() + "");
-        mWeekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
-            @Override
-            public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
-                List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
-                ArrayList<Booking> bookings = getmBookings();
-                if (bookings != null) {
-                    for (int i = 0; i < bookings.size(); i++) {
-                        Booking booking = bookings.get(i);
-                        int id = booking.getId();
-                        String dr_name = booking.getDr_name();
-                        String date = booking.getDate();
-                        String time = booking.getTime();
-                        String phone = booking.getPhone();
-                        String email = booking.getEmail();
-                        boolean checked = booking.isChecked();
-                        int rebook_days = booking.getRebook_days();
-                        int start_hour = Integer.parseInt(time.substring(0, 2));
-                        int start_minute = Integer.parseInt(time.substring(3, 5));
-                        int end_hour = start_hour + 1;
-                        int end_minute = start_minute;
-                        Log.d("time", start_hour + start_minute + "");
-                        int year = Integer.parseInt(date.substring(0, 4));
-                        int month = Integer.parseInt(date.substring(5, 7));
-                        int day = Integer.parseInt(date.substring(8));
-                        String name;
-                        if(checked){
-                            name = "\nLịch hẹn " + start_hour + ":" + start_minute + "-" + day + "/" + month + "/" + year + "\n" + dr_name+"\n"+"Đã xác nhận";
-                        }else
-                            name = "\nLịch hẹn " + start_hour + ":" + start_minute + "-" + day + "/" + month + "/" + year + "\n" + dr_name+"\n"+"Chưa xác nhận";
-                        WeekViewEvent event = new WeekViewEvent((long) id, name, year, month, day, start_hour, start_minute, year, month, day, end_hour, end_minute);
-                        Log.d("event", name);
-                        if (checked) {
-                            event.setColor(context.getResources().getColor(R.color.accent));
-                        } else
-                            event.setColor(context.getResources().getColor(R.color.base_color));
-                        events.add(event);
-                    }
+//        if(jsonArray!= null){
+//            setmBookings(JSONParse.bookingList(jsonArray,context));
+//            mWeekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
+//                @Override
+//                public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
+//                    List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
+//                    ArrayList<Booking> bookings = getmBookings();
+//                    if (bookings != null) {
+//                        for (int i = 0; i < bookings.size(); i++) {
+//                            Booking booking = bookings.get(i);
+//                            int id = booking.getId();
+//                            String dr_name = booking.getDr_name();
+//                            String date = booking.getDate();
+//                            String time = booking.getTime();
+//                            String phone = booking.getPhone();
+//                            String email = booking.getEmail();
+//                            boolean checked = booking.isChecked();
+//                            int rebook_days = booking.getRebook_days();
+//                            int start_hour = Integer.parseInt(time.substring(0, 2));
+//                            int start_minute = Integer.parseInt(time.substring(3, 5));
+//                            int end_hour = start_hour + 1;
+//                            int end_minute = start_minute;
+//                            Log.d("time", start_hour + start_minute + "");
+//                            int year = Integer.parseInt(date.substring(0, 4));
+//                            int month = Integer.parseInt(date.substring(5, 7));
+//                            int day = Integer.parseInt(date.substring(8));
+//                            String name;
+//                            if(checked){
+//                                name = "\nLịch hẹn " + start_hour + ":" + start_minute + "-" + day + "/" + month + "/" + year + "\n" + dr_name+"\n"+"Đã xác nhận";
+//                            }else
+//                                name = "\nLịch hẹn " + start_hour + ":" + start_minute + "-" + day + "/" + month + "/" + year + "\n" + dr_name+"\n"+"Chưa xác nhận";
+//                            WeekViewEvent event = new WeekViewEvent((long) id, name, year, month, day, start_hour, start_minute, year, month, day, end_hour, end_minute);
+//                            Log.d("event", name);
+//                            if (checked) {
+//                                event.setColor(context.getResources().getColor(R.color.accent));
+//                            } else
+//                                event.setColor(context.getResources().getColor(R.color.base_color));
+//                            events.add(event);
+//                        }
+//
+//                    }
+//                    Log.d("events size", events.size() + "");
+//                    return events;
+//                }
+//            });
+//            mWeekView.setWeekViewLoader(new WeekViewLoader() {
+//                @Override
+//                public double toWeekViewPeriodIndex(Calendar instance) {
+//                    return 0;
+//                }
+//
+//                @Override
+//                public List<? extends WeekViewEvent> onLoad(int periodIndex) {
+//                    List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
+//                    ArrayList<Booking> bookings = getmBookings();
+//                    if (bookings != null) {
+//                        for (int i = 0; i < bookings.size(); i++) {
+//                            Booking booking = bookings.get(i);
+//                            int id = booking.getId();
+//                            String dr_name = booking.getDr_name();
+//                            String date = booking.getDate();
+//                            String time = booking.getTime();
+//                            String phone = booking.getPhone();
+//                            String email = booking.getEmail();
+//                            boolean checked = booking.isChecked();
+//                            int rebook_days = booking.getRebook_days();
+//                            int start_hour = Integer.parseInt(time.substring(0, 2));
+//                            int start_minute = Integer.parseInt(time.substring(3, 5));
+//                            int end_hour = start_hour + 1;
+//                            int end_minute = start_minute;
+//                            Log.d("time", start_hour + start_minute + "");
+//                            int year = Integer.parseInt(date.substring(0, 4));
+//                            int month = Integer.parseInt(date.substring(5, 7));
+//                            int day = Integer.parseInt(date.substring(8));
+//                            String name;
+//                            if (checked) {
+//                                name = "\nLịch hẹn " + start_hour + ":" + start_minute + "-" + day + "/" + month + "/" + year + "\n" + dr_name + "\n" + "Đã xác nhận";
+//                            } else
+//                                name = "\nLịch hẹn " + start_hour + ":" + start_minute + "-" + day + "/" + month + "/" + year + "\n" + dr_name + "\n" + "Chưa xác nhận";
+//                            WeekViewEvent event = new WeekViewEvent((long) id, name, year, month, day, start_hour, start_minute, year, month, day, end_hour, end_minute);
+//                            Log.d("event", name);
+//                            if (checked) {
+//                                event.setColor(context.getResources().getColor(R.color.accent));
+//                            } else
+//                                event.setColor(context.getResources().getColor(R.color.base_color));
+//                            events.add(event);
+//                        }
+//
+//                    }
+//                    Log.d("events size", events.size() + "");
+//                    return events;
+//                }
+//            });
+//        }
+//
+//        Log.d("booking size", getmBookings().size() + "");
 
-                }
-                Log.d("events size", events.size() + "");
-                return events;
-            }
-        });
-        mWeekView.setWeekViewLoader(new WeekViewLoader() {
-            @Override
-            public double toWeekViewPeriodIndex(Calendar instance) {
-                return 0;
-            }
-            @Override
-            public List<? extends WeekViewEvent> onLoad(int periodIndex) {
-                List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
-                ArrayList<Booking> bookings = getmBookings();
-                if (bookings != null) {
-                    for (int i = 0; i < bookings.size(); i++) {
-                        Booking booking = bookings.get(i);
-                        int id = booking.getId();
-                        String dr_name = booking.getDr_name();
-                        String date = booking.getDate();
-                        String time = booking.getTime();
-                        String phone = booking.getPhone();
-                        String email = booking.getEmail();
-                        boolean checked = booking.isChecked();
-                        int rebook_days = booking.getRebook_days();
-                        int start_hour = Integer.parseInt(time.substring(0, 2));
-                        int start_minute = Integer.parseInt(time.substring(3, 5));
-                        int end_hour = start_hour + 1;
-                        int end_minute = start_minute;
-                        Log.d("time", start_hour + start_minute + "");
-                        int year = Integer.parseInt(date.substring(0, 4));
-                        int month = Integer.parseInt(date.substring(5, 7));
-                        int day = Integer.parseInt(date.substring(8));
-                        String name;
-                        if(checked){
-                            name = "\nLịch hẹn " + start_hour + ":" + start_minute + "-" + day + "/" + month + "/" + year + "\n" + dr_name+"\n"+"Đã xác nhận";
-                        }else
-                            name = "\nLịch hẹn " + start_hour + ":" + start_minute + "-" + day + "/" + month + "/" + year + "\n" + dr_name+"\n"+"Chưa xác nhận";
-                        WeekViewEvent event = new WeekViewEvent((long) id, name, year, month, day, start_hour, start_minute, year, month, day, end_hour, end_minute);
-                        Log.d("event", name);
-                        if (checked) {
-                            event.setColor(context.getResources().getColor(R.color.accent));
-                        } else
-                            event.setColor(context.getResources().getColor(R.color.base_color));
-                        events.add(event);
-                    }
-
-                }
-                Log.d("events size", events.size() + "");
-                return events;
-            }
-        });
 
     }
 
@@ -376,7 +388,7 @@ public class ThirdFragment extends Fragment implements
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Uri uri);
     }
 
 }

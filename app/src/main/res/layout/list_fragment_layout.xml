@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coord_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:tag="list_fragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvContacts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:scrollbars="vertical" />
+
+    <ViewStub
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/empty_layout"
+        android:visibility="gone" />
+
+    <ViewStub
+        android:id="@+id/loading_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/loading_layout"
+        android:visibility="gone" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:overScrollMode="ifContentScrolls"
+        android:src="@android:drawable/ic_search_category_default"
+        android:tint="@color/icons"
+        app:backgroundTint="@color/primary"
+        app:layout_anchor="@+id/rvContacts"
+        app:layout_anchorGravity="bottom|end"
+        app:layout_behavior="com.phongnguyen93.medicare.extras.FABScrollBehavior" />
+</android.support.design.widget.CoordinatorLayout>

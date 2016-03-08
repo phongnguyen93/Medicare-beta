@@ -33,8 +33,8 @@
     <string name="forgot_text">Quên mật khẩu ?</string>
     <string name="login_msg_success">Đăng nhập thành công</string>
     <string name="login_msg_fail">Đăng nhập không thành công</string>
-    <string name="loading_msg">Xin chờ...</string>
-    <string name="tab_list">Danh sách BS</string>
+    <string name="loading_msg">Đang xử lý...</string>
+    <string name="tab_list">Danh sách</string>
     <string name="tab_map">Bản đồ</string>
     <string name="tab_fav">Yêu thích</string>
     <string name="title_activity_main">Tìm kiếm và quản lý lịch</string>
@@ -84,4 +84,17 @@
     <string name="action_dayview">Xem ngày</string>
     <string name="action_weekview">Xem tuần</string>
     <string name="spinner_title">Hiển thị</string>
+    <string name="tab_list_title">Tìm kiếm theo danh sách</string>
+    <string name="tab_map_title">Tìm kiếm bản đồ</string>
+    <string name="tab_schedule_title">Quản lý lịch</string>
+    <string name="menu_list_filter">Filter</string>
+    <string name="menu_map_filter">Filter</string>
+    <string name="menu_schedule_filter">Filter</string>
+    <string name="menu_schedule_setting">Setting</string>
+    <string name="search_hint">Tìm theo tên hoặc số điện thoại</string>
+    <string name="empty_text">Có lỗi xảy ra ! Không có dữ liệu để hiển thị</string>
+    <string name="empty_button">Thử lại</string>
+    <string name="disconnect_noti">Không có kết nối internet !</string>
+    <string name="slow_connect_noti">Kết nối chậm</string>
+    <string name="success_connect_noti">Đã kết nối</string>
 </resources>

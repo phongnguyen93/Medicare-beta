@@ -88,20 +88,23 @@ public class MapOperations extends MapFragments implements ClusterManager.OnClus
 
     @Override
     public void processFinish(JSONArray jsonArray) {
-        ArrayList<Doctor> doctors= JSONParse.doctorList(jsonArray, getContext(), myLocation);
-        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.marker);
-        for (Doctor doctor: doctors){
-            mClusterManager.addItem(doctor);
-        }
-        Log.d("medicare",doctors.size()+"");
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(LocationService.getCurrentLocation())      // Sets the center of the map to location user
-                .zoom(14)                   // Sets the zoom
-                .bearing(0)                // Sets the orientation of the camera to east
-                .tilt(10)                   // Sets the tilt of the camera to 30 degrees
-                .build();                   // Creates a CameraPosition from the builder
+        if (jsonArray != null) {
+            ArrayList<Doctor> doctors = JSONParse.doctorList(jsonArray, getContext(), myLocation);
+            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.marker);
+            for (Doctor doctor : doctors) {
+                mClusterManager.addItem(doctor);
+            }
+            Log.d("medicare", doctors.size() + "");
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(LocationService.getCurrentLocation())      // Sets the center of the map to location user
+                    .zoom(14)                   // Sets the zoom
+                    .bearing(0)                // Sets the orientation of the camera to east
+                    .tilt(10)                   // Sets the tilt of the camera to 30 degrees
+                    .build();                   // Creates a CameraPosition from the builder
 
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+
     }
 
     private class DoctorRenderer extends DefaultClusterRenderer<Doctor> {

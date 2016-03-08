@@ -3,6 +3,8 @@ package com.phongnguyen93.medicare.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,8 +18,14 @@ import com.phongnguyen93.medicare.R;
 
 public class MapFragments extends Fragment {
 
-    MapView mMapView;
     public GoogleMap mMap;
+    MapView mMapView;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -25,6 +33,7 @@ public class MapFragments extends Fragment {
         // inflat and return the layout
         View v = inflater.inflate(R.layout.activity_maps, container,
                 false);
+
         mMapView = (MapView) v.findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);
 
@@ -36,7 +45,7 @@ public class MapFragments extends Fragment {
             e.printStackTrace();
         }
 
-       setUpMapIfNeeded();
+        setUpMapIfNeeded();
         mMap.setMyLocationEnabled(true);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.getUiSettings().setMapToolbarEnabled(true);
@@ -47,10 +56,12 @@ public class MapFragments extends Fragment {
         return v;
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
         mMapView.onResume();
+
     }
 
     @Override
@@ -70,6 +81,13 @@ public class MapFragments extends Fragment {
         super.onLowMemory();
         mMapView.onLowMemory();
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_map, menu);
+    }
+
+
     protected GoogleMap getMap() {
         setUpMapIfNeeded();
         return mMap;

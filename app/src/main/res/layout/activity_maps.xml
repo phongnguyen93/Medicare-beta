@@ -1,14 +1,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.phongnguyen93.medicare.maps.MapFragment"
+    android:id="@+id/relative_layout"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_height="match_parent">
+    android:tag="map_fragment"
+    tools:context="com.phongnguyen93.medicare.maps.MapFragment">
 
     <com.google.android.gms.maps.MapView
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" android:id="@+id/map"
+        android:layout_height="match_parent"
         android:layout_margin="8dp"
        />
 

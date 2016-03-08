@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.phongnguyen93.medicare.activities.MainActivity">
+    <item
+        android:id="@+id/menu_map_filter"
+        android:icon="@android:drawable/ic_menu_more"
+        android:title="@string/menu_map_filter"
+        app:showAsAction="ifRoom"></item>
+</menu>
