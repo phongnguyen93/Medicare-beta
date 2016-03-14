@@ -11,13 +11,15 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.LatLng;
 
 
 /**
  * Created by Phong Nguyen on 1/4/2016.
  */
-public class LocationService implements LocationListener {
+public class LocationService implements LocationListener,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
 
     //The minimum distance to change updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 10 meters
@@ -59,7 +61,6 @@ public class LocationService implements LocationListener {
     /**
      * Sets up location service after permissions is granted
      */
-    @TargetApi(23)
     private void initLocationService(Context context) {
         boolean  locationServiceAvailable;
 
@@ -146,5 +147,20 @@ public class LocationService implements LocationListener {
 
     public void setCurrentLocation(LatLng currentLocation) {
         this.currentLocation = currentLocation;
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }

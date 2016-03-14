@@ -111,10 +111,11 @@
     <string name="menu_map_filter">Filter</string>
     <string name="menu_schedule_filter">Filter</string>
     <string name="menu_schedule_setting">Setting</string>
-    <string name="search_hint">Find with name or phone number</string>
+    <string name="search_hint">Find with doctor name</string>
     <string name="empty_text">Something wrong ! No data to display</string>
     <string name="empty_button">Try again</string>
     <string name="disconnect_noti">No internet connection !</string>
     <string name="slow_connect_noti">Slow connection !</string>
     <string name="success_connect_noti">Connected !</string>
+    <string name="content_authority">com.phongnguyen93.medicare</string>
 </resources>

@@ -26,8 +26,8 @@ public class DataContract {
     public static final String PATH_USER = "user";
     // Path for look up doctor data
     public static final String PATH_DOCTOR = "doctor";
-    // Path for look up location data
-    public static final String PATH_LOCATION = "location";
+//    // Path for look up location data
+//    public static final String PATH_LOCATION = "location";
     // Path for look up user favourite doctor
     public static final String PATH_FAV_DOCTOR = "fav_doctor";
     // Path for save user log data
@@ -54,8 +54,8 @@ public class DataContract {
 
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USER;
-        public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USER;
+//        public static final String CONTENT_ITEM_TYPE =
+//                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USER;
 
         // Table name
         public static final String TABLE_NAME = "user";
@@ -122,11 +122,24 @@ public class DataContract {
         public static final String COLUMN_DR_WORKTIME = "dr_worktime";
         // Doctor location ( lat, lng) column
         public static final String COLUMN_DR_LOCATION = "dr_location";
+        // Doctor is favoured by user
+        public static final String COLUMN_IS_FAV = "is_fav";
 
 
         public static Uri buildDoctorUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+        //Build Uri to get doctor by id
+        public static Uri buildDoctorWithId(String doctor_id){
+            return CONTENT_URI.buildUpon()
+                    .appendQueryParameter(COLUMN_DR_ID,doctor_id)
+                    .build();
+        }
+        //Get doctor id from URI
+        public static String getDoctorIdFromUri(Uri uri){
+            return uri.getQueryParameter(COLUMN_DR_ID);
+        }
+
     }
 
     /* Inner class that defines the table contents of the USER FAVOURITE DOCTOR table */
@@ -137,8 +150,6 @@ public class DataContract {
 
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAV_DOCTOR;
-        public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAV_DOCTOR;
 
         // Table name
         public static final String TABLE_NAME = "fav_doctor";
@@ -187,6 +198,34 @@ public class DataContract {
         public static Uri buildBookingUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+        //Build Uri get booking by doctor id
+        public static Uri buildBookingWithDoctorId(String doctor_id){
+            return CONTENT_URI.buildUpon()
+                    .appendQueryParameter(COLUMN_BOOKING_DOCTOR,doctor_id)
+                    .build();
+        }
+        //Build Uri get booking by date
+        public static Uri buildBookingWithDate(String date){
+            long normalizeDate = normalizeDate(Long.parseLong(date));
+            return CONTENT_URI.buildUpon()
+                    .appendQueryParameter(COLUMN_BOOKING_DATE,Long.toString(normalizeDate))
+                    .build();
+        }
+        //Build Uri get booking by date and doctor id
+        public static Uri buildBookingWithDateAndDoctorId(String doctor_id, String date){
+            return CONTENT_URI.buildUpon()
+                    .appendQueryParameter(COLUMN_BOOKING_DOCTOR,doctor_id)
+                    .appendQueryParameter(COLUMN_BOOKING_DATE,date)
+                    .build();
+        }
+        //Get doctor id from booking Uri
+        public static String getBookingDoctorIdFromUri(Uri uri){
+            return uri.getQueryParameter(COLUMN_BOOKING_DOCTOR);
+        }
+        //Get booking date from Uri
+        public static String getBookingDateFromUri(Uri uri){
+            return uri.getQueryParameter(COLUMN_BOOKING_DATE);
+        }
     }
 
     /* Inner class that defines the table contents of the USER LOG table */
@@ -197,8 +236,6 @@ public class DataContract {
 
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USER_LOG;
-        public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USER_LOG;
 
         // Table name
         public static final String TABLE_NAME = "user_log";
@@ -207,17 +244,21 @@ public class DataContract {
         // Log user column
         public static final String COLUMN_LOG_USER = "log_user";
         // Log doctor if has column
-        public static final String COLUMN_LOG_DOCTOR = "user_email";
+        public static final String COLUMN_LOG_DOCTOR = "log_doctor";
         // Log address column
-        public static final String COLUMN_LOG_ADDRESS = "user_address";
+        public static final String COLUMN_LOG_ADDRESS = "log_address";
         // Log location (lat,lng) column
-        public static final String COLUMN_LOG_LOCATION = "use_phone";
+        public static final String COLUMN_LOG_LOCATION = "log_location";
         // Log date column
-        public static final String COLUMN_LOG_DATE = "user_image";
+        public static final String COLUMN_LOG_DATE = "log_date";
+        // Log sync state with server
+        public static final String COLUMN_LOG_SYNC = "log_sync";
 
 
         public static Uri buildUserLogUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
+
+
 }
