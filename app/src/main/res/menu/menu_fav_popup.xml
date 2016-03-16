@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="@string/popupmenu_detail"
+        android:id="@+id/menu_detail" />
+    <item
+        android:title="@string/popupmenu_quick_booking"
+        android:id="@+id/menu_quickbooking" />
+    <item
+        android:title="@string/popupmenu_unfav"
+        android:id="@+id/menu_unfav" />
+
+</menu>

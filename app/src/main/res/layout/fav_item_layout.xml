@@ -10,8 +10,7 @@
         android:layout_height="56dp"
         android:scaleType="fitCenter"
         android:layout_centerVertical="true"
-        android:padding="8dp"
-         />
+        android:padding="8dp"/>
 
     <LinearLayout
         android:id="@+id/detail_text"
@@ -49,12 +48,13 @@
             android:textSize="13sp" />
     </LinearLayout>
 
-    <TextView
+    <ImageView
+        android:id="@+id/img_btn"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:layout_alignParentEnd="true"
-        android:id="@+id/detail_distance"
-        android:textColor="@color/accent"
-        android:textSize="16sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:background="@drawable/ic_more_vert_gray_24dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp" />
 
 </RelativeLayout>

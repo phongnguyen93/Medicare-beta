@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -30,13 +31,15 @@ import android.widget.TextView;
 import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.adapters.MyPageViewAdapter;
 import com.phongnguyen93.medicare.database.DbOperations;
-import com.phongnguyen93.medicare.extras.CurrentUser;
+import com.phongnguyen93.medicare.fragments.FavFragment;
+import com.phongnguyen93.medicare.functions.FunctionFavDoctor;
+import com.phongnguyen93.medicare.functions.FunctionUser;
 import com.phongnguyen93.medicare.extras.En_Decrypt;
-import com.phongnguyen93.medicare.extras.NonSwipeableViewPager;
+import com.phongnguyen93.medicare.model.User;
+import com.phongnguyen93.medicare.ui_view.NonSwipeableViewPager;
 import com.phongnguyen93.medicare.fragments.ListFragment;
 import com.phongnguyen93.medicare.fragments.SecondFragment;
 import com.phongnguyen93.medicare.fragments.TestFragment;
-import com.phongnguyen93.medicare.fragments.ThirdFragment;
 import com.phongnguyen93.medicare.maps.LocationService;
 import com.phongnguyen93.medicare.maps.MapOperations;
 import com.phongnguyen93.medicare.ui_view.tabs.SlidingTabLayout;
@@ -55,45 +58,66 @@ import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends BaseActivity implements ListFragment.OnFragmentInteractionListener,
         SecondFragment.OnFragmentInteractionListener,
-        ThirdFragment.OnFragmentInteractionListener, View.OnClickListener, ViewPager.OnPageChangeListener {
+        FavFragment.OnFragmentInteractionListener, View.OnClickListener, ViewPager.OnPageChangeListener {
     public static final int LIST_FRAGMENT_ID = 0;
     public static final int MAP_FRAGMENT_ID = 1;
     public static final int SCHEDULE_FRAGMENT_ID = 2;
+
     public static final int ALERT_SNACKBAR = 0;
     public static final int WARNING_SNACKBAR = 1;
     public static final int INFO_SNACKBAR = 2;
+
+    public static final String CURRENT_TAB = "currentTab";
+    private static final String PREFS_NAME = "myPreferences";
+
     private DrawerLayout mDrawer;
-    private NavigationView nvDrawer;
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
-    private NonSwipeableViewPager mPager;
-    private SpotsDialog progressDialog;
-    private CurrentUser currentUser;
+    private FunctionUser functionUser;
     private  LocationService locationService;
-    private Snackbar snackbarAlert, snackbarWarning, snackbarInfo;
-    private int currentPage = LIST_FRAGMENT_ID;
-    // The BroadcastReceiver that tracks network connectivity changes.
-    private NetworkReceiver receiver = new NetworkReceiver();
+    private Snackbar snackbarAlert;
+    private int currentPage;
+    private FunctionFavDoctor functionFavDoctor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        progressDialog = new SpotsDialog(this, R.style.Custom);
+        SpotsDialog progressDialog = new SpotsDialog(this, R.style.Custom);
         progressDialog.setCancelable(false);
-
-
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //set up needed services
-        currentUser = new CurrentUser(getApplicationContext());
+        functionUser = new FunctionUser(getApplicationContext());
         locationService = new LocationService(getBaseContext());
+        User user = functionUser.getCurrentUser();
+        functionFavDoctor = new FunctionFavDoctor(getApplicationContext());
+        functionFavDoctor.setupData(user.getId());
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
+        if(settings != null){
+            currentPage = settings.getInt(CURRENT_TAB,LIST_FRAGMENT_ID);
+        }
         setupDrawer();
         setupConnCheck();
-        setupTabs();
+        setupTabs(currentPage);
+
     }
 
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // We need an Editor object to make preference changes.
+        // All objects are from android.context.Context
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(CURRENT_TAB, currentPage);
+        // Commit the edits!
+        editor.commit();
+    }
 
     //display snackbar depend on @param type
     private void displaySnackbar(int type) {
@@ -120,7 +144,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
                 break;
             //display slow connection warning snack bar
             case WARNING_SNACKBAR:
-                snackbarWarning = Snackbar.make(layout, getResources().getString(R.string.slow_connect_noti), Snackbar.LENGTH_LONG);
+                Snackbar snackbarWarning = Snackbar.make(layout, getResources().getString(R.string.slow_connect_noti), Snackbar.LENGTH_LONG);
                 sbView = snackbarWarning.getView();
                 textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
                 textView.setTextColor(Color.WHITE);
@@ -129,7 +153,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
                 break;
             //display confirm connected success snackbar
             case INFO_SNACKBAR:
-                snackbarInfo = Snackbar.make(layout, getResources().getString(R.string.success_connect_noti), Snackbar.LENGTH_SHORT);
+                Snackbar snackbarInfo = Snackbar.make(layout, getResources().getString(R.string.success_connect_noti), Snackbar.LENGTH_SHORT);
                 sbView = snackbarInfo.getView();
                 textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
                 textView.setTextColor(Color.WHITE);
@@ -144,7 +168,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     //register the NetworkReciver to check connection change
     private void setupConnCheck() {
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        receiver = new NetworkReceiver();
+        NetworkReceiver receiver = new NetworkReceiver();
         this.registerReceiver(receiver, filter);
         receiver.goAsync();
     }
@@ -167,7 +191,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     private void setupDrawer() {
         // Find our drawer view
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        nvDrawer = (NavigationView) findViewById(R.id.nvView);
+        NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
         // Setup drawer view
         setupDrawerContent(nvDrawer);
         drawerToggle = setupDrawerToggle();
@@ -178,24 +202,28 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
      * Set up View Pager for Sliding Tab layout
      * Create fragment list to add into layout
      */
-    private void setupTabs() {
+    private void setupTabs(int currentTab) {
         //create fragments list
         ArrayList<Fragment> fragments = new ArrayList<>();
         fragments.add(new ListFragment());
         fragments.add(new MapOperations());
-        fragments.add(new ThirdFragment());
+        fragments.add(new FavFragment());
         //setup ViewPager for tab
-        mPager = (NonSwipeableViewPager) findViewById(R.id.viewPager);
+        ViewPager mPager = (ViewPager) findViewById(R.id.viewPager);
         MyPageViewAdapter myPageViewAdapter = new MyPageViewAdapter(getApplicationContext(),
                 getSupportFragmentManager(), fragments);
         mPager.setAdapter(myPageViewAdapter);
         //setup Tab
         SlidingTabLayout mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.tab_layout);
+
         mSlidingTabLayout.setCustomTabView(R.layout.custom_tab, 0);
         mSlidingTabLayout.setDistributeEvenly(true);
         mSlidingTabLayout.setViewPager(mPager);
         mSlidingTabLayout.setOnPageChangeListener(this);
+        //set previous saved tab position
+        mPager.setCurrentItem(currentTab);
     }
+
 
 
     private ActionBarDrawerToggle setupDrawerToggle() {
@@ -275,7 +303,9 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         //remove server token
         removeServerToken(id, token);
         //remove current user
-        currentUser.removeCurrentUser(En_Decrypt.fromHex(id));
+        functionUser.removeCurrentUser(En_Decrypt.fromHex(id));
+        //remove all faved doctor from local db
+        functionFavDoctor.removeAllDoctorFromLocal();
         //navigate to welcome screen
         Intent t = new Intent(MainActivity.this, WelcomeActivity.class);
         t.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -304,10 +334,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
                 mDrawer.openDrawer(GravityCompat.START);
                 return true;
         }
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     // Make sure this is the method with just `Bundle` as the signature
@@ -356,7 +383,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
                 break;
             case SCHEDULE_FRAGMENT_ID:
                 currentPage = SCHEDULE_FRAGMENT_ID;
-                this.setTitle(getResources().getString(R.string.tab_schedule_title));
+                this.setTitle(getResources().getString(R.string.tab_fav_title));
                 break;
         }
     }
@@ -393,8 +420,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
                 // Convert result to JSONObject
                 JSONObject jsonObject =  new JSONObject(result.toString());
-                if(jsonObject!= null)
-                    isRemoved= jsonObject.getBoolean("status");
+                isRemoved= jsonObject.getBoolean("status");
             } catch (IOException e) {
                 Log.e(mLogTag, "JSON file could not be read");
             } catch (JSONException e) {

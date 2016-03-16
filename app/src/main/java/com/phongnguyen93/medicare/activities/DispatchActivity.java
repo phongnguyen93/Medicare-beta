@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.database.DbOperations;
 
 /**
@@ -19,6 +20,7 @@ public class DispatchActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_dispatch);
         if(getCurrentSession()){
             Intent t = new Intent(this, MainActivity.class);
             t.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

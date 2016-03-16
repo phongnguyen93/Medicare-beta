@@ -86,15 +86,23 @@
     <string name="spinner_title">Hiển thị</string>
     <string name="tab_list_title">Tìm kiếm theo danh sách</string>
     <string name="tab_map_title">Tìm kiếm bản đồ</string>
-    <string name="tab_schedule_title">Quản lý lịch</string>
+    <string name="tab_fav_title">Bác sĩ yêu thích</string>
     <string name="menu_list_filter">Filter</string>
     <string name="menu_map_filter">Filter</string>
     <string name="menu_schedule_filter">Filter</string>
     <string name="menu_schedule_setting">Setting</string>
     <string name="search_hint">Tìm theo tên bác sĩ</string>
-    <string name="empty_text">Có lỗi xảy ra ! Không có dữ liệu để hiển thị</string>
+    <string name="empty_text">Không có dữ liệu để hiển thị</string>
     <string name="empty_button">Thử lại</string>
     <string name="disconnect_noti">Không có kết nối internet !</string>
     <string name="slow_connect_noti">Kết nối chậm</string>
     <string name="success_connect_noti">Đã kết nối</string>
+    <string name="fav_text">Thêm vào yêu thích</string>
+    <string name="unfav_text">Bỏ yêu thích</string>
+    <string name="fav_noti">Đã yêu thích</string>
+    <string name="unfav_noti">Đã bỏ yêu thích</string>
+    <string name="popupmenu_detail">Thông tin chi tiết</string>
+    <string name="popupmenu_quick_booking">Đặt lịch nhanh</string>
+    <string name="popupmenu_unfav">Bỏ thích</string>
+    <string name="unfav_undo">Hoàn tác</string>
 </resources>

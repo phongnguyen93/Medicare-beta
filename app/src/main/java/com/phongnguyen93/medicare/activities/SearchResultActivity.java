@@ -37,6 +37,8 @@ public class SearchResultActivity extends Activity implements JSONArrayRequest.A
     private ViewStub loading_view,empty_view;
     private android.support.design.widget.FloatingActionButton fab;
 
+    private static final int SEARCH_ID = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,7 +114,7 @@ public class SearchResultActivity extends Activity implements JSONArrayRequest.A
             for (int i = 0; i < tempData.size(); i++) {
                 Doctors.add(tempData.get(i));
             }
-            RecyclerViewAdapter adapter = new RecyclerViewAdapter(Doctors);
+            RecyclerViewAdapter adapter = new RecyclerViewAdapter(Doctors,SEARCH_ID);
             adapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {

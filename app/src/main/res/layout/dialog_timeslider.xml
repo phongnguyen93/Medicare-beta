@@ -49,9 +49,8 @@
             android:id="@+id/hour_slider"
             style="@style/Scroller"
             app:childWidth="90dp"
-            app:labelerClass="com.phongnguyen93.medicare.dateslider.labeler.HourLabeler"
+            app:labelerClass="com.phongnguyen93.medicare.ui_view.dateslider.labeler.HourLabeler"
             app:labelerFormat="%tk" />
-
 
 
         <com.phongnguyen93.medicare.ui_view.dateslider.ScrollLayout
@@ -59,7 +58,7 @@
             style="@style/Scroller"
             android:background="@drawable/base_panel_top_divider"
             app:childWidth="45dp"
-            app:labelerClass="com.phongnguyen93.medicare.dateslider.labeler.MinuteLabeler"
+            app:labelerClass="com.phongnguyen93.medicare.ui_view.dateslider.labeler.MinuteLabeler"
             app:labelerFormat="%tM" />
 
     </com.phongnguyen93.medicare.ui_view.dateslider.SliderContainer>

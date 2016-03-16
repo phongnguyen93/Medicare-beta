@@ -1,4 +1,4 @@
-package com.phongnguyen93.medicare.extras;
+package com.phongnguyen93.medicare.functions;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -14,7 +14,7 @@ import org.json.JSONObject;
 /**
  * Created by Phong Nguyen on 11/14/2015.
  */
-public class CurrentUser implements JSONObjectRequest.AsyncResponse {
+public class FunctionUser implements JSONObjectRequest.AsyncResponse {
     private static final String TAG = "medicare";
     DbOperations dp;
     Context context;
@@ -23,7 +23,7 @@ public class CurrentUser implements JSONObjectRequest.AsyncResponse {
     String CURRENT_USER_PHONE;
     String CURRENT_USER_EMAIL;
 
-    public CurrentUser(Context context) {
+    public FunctionUser(Context context) {
         this.context =context;
     }
 
@@ -35,7 +35,7 @@ public class CurrentUser implements JSONObjectRequest.AsyncResponse {
 
     private void connection(String user_id, String user_pass) {
         JSONObjectRequest jsonObjectRequest =new JSONObjectRequest(this);
-        String URL = "http://medicare-phongtest.rhcloud.com/rest_web_service/service/getuserbyid?id=" + user_id + "&pass=" + user_pass;
+        String URL = "http://medicare1-phongtest.rhcloud.com/rest_web_service/service/getuserbyid?id=" + user_id + "&pass=" + user_pass;
         jsonObjectRequest.execute(URL);
     }
 
@@ -84,4 +84,5 @@ public class CurrentUser implements JSONObjectRequest.AsyncResponse {
         dp =  new DbOperations(context);
         dp.removeUser(dp,user_id);
     }
+
 }

@@ -9,7 +9,7 @@ import android.widget.Toast;
 
 import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.database.DbOperations;
-import com.phongnguyen93.medicare.extras.CurrentUser;
+import com.phongnguyen93.medicare.functions.FunctionUser;
 import com.phongnguyen93.medicare.extras.En_Decrypt;
 import com.phongnguyen93.medicare.json.JSONObjectRequest;
 
@@ -26,14 +26,14 @@ public class LoginActivity extends BaseActivity implements Button.OnClickListene
     private com.rengwuxian.materialedittext.MaterialEditText edt_id, edt_pass;
     private Button btn_login;
     DbOperations dp;
-    CurrentUser currentUser;
+    FunctionUser functionUser;
     private String USER_ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        currentUser = new CurrentUser(getApplicationContext());
+        functionUser = new FunctionUser(getApplicationContext());
         viewHolder();
     }
 
@@ -62,16 +62,17 @@ public class LoginActivity extends BaseActivity implements Button.OnClickListene
                             user_id = En_Decrypt.toHex(edt_id.getText().toString());
                             USER_ID = user_id;
                             user_pass = En_Decrypt.toHex(edt_pass.getText().toString());
-                            Log.d("encrpyt_string", user_id + "," + user_pass);
+                            Log.d("encrypt_string", user_id + "," + user_pass);
                             decrypt_id = En_Decrypt.fromHex(user_id);
                             decrypt_pass = En_Decrypt.fromHex(user_pass);
+                            functionUser.setCurrentUser(decrypt_id, decrypt_pass);
                             Log.d("decrypt_string", decrypt_id + "," + decrypt_pass);
 
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         doLogin(user_id, user_pass);
-                        currentUser.setCurrentUser(decrypt_id, decrypt_pass);
+
                     }
                break;
         }

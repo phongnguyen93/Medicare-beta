@@ -13,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.phongnguyen93.medicare.R;
-import com.phongnguyen93.medicare.extras.CurrentUser;
+import com.phongnguyen93.medicare.functions.FunctionUser;
 import com.phongnguyen93.medicare.extras.Utils;
 import com.phongnguyen93.medicare.json.JSONObjectRequest;
 import com.phongnguyen93.medicare.model.Doctor;
@@ -39,7 +39,7 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
     MaterialEditText edit_date, edit_time, edit_drName, edit_phone, edit_email;
     private Doctor doctor;
     private User user;
-    private CurrentUser currentUser;
+    private FunctionUser functionUser;
     private String inserDate;
     private String inserTime;
     private AlertDialog theDialog;
@@ -56,9 +56,9 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
-        currentUser = new CurrentUser(getApplicationContext());
+        functionUser = new FunctionUser(getApplicationContext());
         doctor = getIntent().getParcelableExtra("doctor");
-        user = currentUser.getCurrentUser();
+        user = functionUser.getCurrentUser();
         viewHolder();
     }
 
@@ -189,7 +189,7 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
                             .withSelectedDate(new Date());
                     break;
                 case R.id.edit_time:
-                    showDialog(2);
+                    showDialog(TIME_SLIDER_DIALOG_ID);
                     break;
             }
         }
@@ -220,10 +220,14 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
                 maxTime.set(Calendar.MINUTE,-10);
                 Log.d("min-max time",min+","+max);
                 String Worktime = getResources().getString(R.string.edittext_dr_worktime)+": "+doctor.getWorktime();
-                TimeSlider timeSlider = new  TimeSlider(this,mTimeSetListener,c,minTime,maxTime,10, Utils.convertWorktime(Worktime,getApplicationContext()));
-                return timeSlider;
+                return new  TimeSlider(this,
+                        mTimeSetListener,c,
+                        minTime,maxTime,10,
+                        Utils.convertWorktime(Worktime,getApplicationContext()));
+
+            default:
+                throw new UnsupportedOperationException("Unknown id"+id);
         }
-        return null;
     }
 
     private ArrayList<String> getWorktime(String worktime){

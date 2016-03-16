@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -23,22 +24,45 @@ import java.util.ArrayList;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int VIEW_TYPE_LOADING = 0;
     public static final int VIEW_TYPE_DATA = 1;
+
     private static OnItemClickListener listener;
+
+    private static int FRAGMENT_ID;
+    private static final int LIST_FRAGMENT_ID = 1;
+    private static final int FAV_FRAGMENT_ID = 3;
+
+    private ViewStub normal_item_layout, fav_item_layout;
+
     //Store variable for list of doctors
     private ArrayList<Doctor> doctors;
 
     //Constructor of this class, @param ArrayList<Doctor>
-    public RecyclerViewAdapter(ArrayList<Doctor> doctors) {
+    public RecyclerViewAdapter(ArrayList<Doctor> doctors, int fragmentId ) {
         this.doctors=doctors;
+        FRAGMENT_ID = fragmentId;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
+
+
         Log.d("view type", viewType + "");
         if (viewType == VIEW_TYPE_DATA) {
             View view = inflater.inflate(R.layout.card_layout, parent, false);
+            normal_item_layout = (ViewStub) view.findViewById(R.id.normal_item);
+            fav_item_layout = (ViewStub) view.findViewById(R.id.fav_item);
+            switch (FRAGMENT_ID){
+                case LIST_FRAGMENT_ID:
+                    normal_item_layout.setVisibility(View.VISIBLE);
+                    break;
+                case FAV_FRAGMENT_ID:
+                    fav_item_layout.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unknown fragment id "+FRAGMENT_ID);
+            }
             return new ViewHolder(view);
         } else if (viewType == VIEW_TYPE_LOADING) {
             View view = inflater.inflate(R.layout.progress_item, parent, false);
@@ -63,7 +87,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             workdays.setText(doctor.getWorkdays());
             worktime.setText(doctor.getWorktime());
             img_view.setImageResource(R.drawable.applogo);
-            distance.setText(Utils.formatNumber(doctor.getDistance()) + "");
+            if (FRAGMENT_ID == LIST_FRAGMENT_ID)
+                distance.setText(Utils.formatNumber(doctor.getDistance()) + "");
         } else if (holder instanceof LoadingViewHolder) {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
             loadingViewHolder.progressBar.setIndeterminate(true);
@@ -73,7 +98,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
-        return (position == doctors.size() - 1) ? VIEW_TYPE_LOADING
+        return (position > doctors.size()) ? VIEW_TYPE_LOADING
                 : VIEW_TYPE_DATA;
     }
 
@@ -110,7 +135,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, addressTextView, workdaysTextView, worktimeTextView, distanceTextView;
-        ImageView img_view;
+        ImageView img_view,img_btn;
         View item_view;
 
 
@@ -120,13 +145,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
             super(itemView);
-            item_view = itemView.findViewById(R.id.itemview);
+            item_view = itemView.findViewById(R.id.item_view);
             img_view = (ImageView) itemView.findViewById(R.id.icon);
             nameTextView = (TextView) itemView.findViewById(R.id.detail_name);
             addressTextView = (TextView) itemView.findViewById(R.id.detail_address);
             workdaysTextView = (TextView) itemView.findViewById(R.id.detail_workdays);
             worktimeTextView = (TextView) itemView.findViewById(R.id.detail_worktime);
-            distanceTextView = (TextView) itemView.findViewById(R.id.detail_distance);
+            if(FRAGMENT_ID == LIST_FRAGMENT_ID)
+                distanceTextView = (TextView) itemView.findViewById(R.id.detail_distance);
+            if(FRAGMENT_ID == FAV_FRAGMENT_ID){
+                img_btn = (ImageView) itemView.findViewById(R.id.img_btn);
+                img_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (listener != null)
+                            listener.onItemClick(img_btn, getLayoutPosition());
+                    }
+                });
+            }
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

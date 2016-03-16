@@ -1,4 +1,4 @@
-package com.phongnguyen93.medicare.extras;
+package com.phongnguyen93.medicare.ui_view;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;

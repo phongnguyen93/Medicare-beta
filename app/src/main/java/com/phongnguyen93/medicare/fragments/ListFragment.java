@@ -57,6 +57,8 @@ public class ListFragment extends Fragment implements JSONArrayRequest.AsyncResp
     private ViewStub empty_view, loading_view;
     private android.support.design.widget.FloatingActionButton fab;
 
+    private static final int LIST_FRAGMENT_ID = 1;
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_list, menu);
@@ -158,7 +160,7 @@ public class ListFragment extends Fragment implements JSONArrayRequest.AsyncResp
             for (int i = 0; i <= 7; i++) {
                 Doctors.add(tempData.get(i));
             }
-            adapter = new RecyclerViewAdapter(Doctors);
+            adapter = new RecyclerViewAdapter(Doctors,LIST_FRAGMENT_ID);
             adapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {

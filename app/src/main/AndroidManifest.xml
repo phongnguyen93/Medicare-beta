@@ -71,7 +71,8 @@
         <activity
             android:name=".activities.MainActivity"
             android:theme="@style/BaseTheme" />
-        <activity android:name=".activities.DispatchActivity">
+        <activity android:name=".activities.DispatchActivity"
+            android:theme="@style/BaseTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

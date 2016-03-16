@@ -39,5 +39,5 @@
         app:backgroundTint="@color/primary"
         app:layout_anchor="@+id/rvContacts"
         app:layout_anchorGravity="bottom|end"
-        app:layout_behavior="com.phongnguyen93.medicare.extras.FABScrollBehavior" />
+        app:layout_behavior="com.phongnguyen93.medicare.ui_view.FABScrollBehavior" />
 </android.support.design.widget.CoordinatorLayout>

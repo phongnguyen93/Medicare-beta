@@ -39,14 +39,17 @@ public class JSONParse {
                 String worktime = jsonObject.getString("worktime");
                 String location = jsonObject.getString("location");
                 boolean active = jsonObject.getBoolean("isactive");
-                try {
-                    LatLng mPosition = Utils.convertLatLng(location);
-                    double distance = SphericalUtil.computeDistanceBetween(mPosition, myLocation);
-                    Log.d("distance",distance+"");
-                    doctors.add(new Doctor(id, name, email, phone, license, spec, address, active, mPosition, distance, workdays, worktime));
-                } catch (RuntimeException e) {
-                    throw e;
-                }
+                if( myLocation != null){
+                    try {
+                        LatLng mPosition = Utils.convertLatLng(location);
+                        double distance = SphericalUtil.computeDistanceBetween(mPosition, myLocation);
+                        Log.d("distance",distance+"");
+                        doctors.add(new Doctor(id, name, email, phone, license, spec, address, active, mPosition, distance, workdays, worktime));
+                    } catch (RuntimeException e) {
+                        throw e;
+                    }
+                }else
+                    doctors.add(new Doctor(id, name, email, phone, license, spec, address, active, null, 0, workdays, worktime));
             } catch (JSONException jsonEx) {
                 Log.e("JSON Error", jsonEx.getMessage());
             }

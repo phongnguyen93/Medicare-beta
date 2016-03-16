@@ -1,4 +1,4 @@
-package com.phongnguyen93.medicare.extras;
+package com.phongnguyen93.medicare.ui_view;
 
 /**
  * Created by Phong Nguyen on 1/4/2016.
