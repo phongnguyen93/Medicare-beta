@@ -40,16 +40,14 @@ import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
  *
  */
 public class ListFragment extends Fragment implements JSONArrayRequest.AsyncResponse {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+
     private LatLng myLocation;
     private Context context;
     // TODO: Rename and change types of parameters
     private RecyclerView rvContacts;
     private ArrayList<Doctor> Doctors, tempData;
 
+    private LocationService locationService;
     private OnFragmentInteractionListener mListener;
     private int limit = 50;
     private RecyclerViewAdapter adapter = null;
@@ -68,7 +66,7 @@ public class ListFragment extends Fragment implements JSONArrayRequest.AsyncResp
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        //Get pre-load data
+        locationService = new LocationService(getContext());
 
     }
 

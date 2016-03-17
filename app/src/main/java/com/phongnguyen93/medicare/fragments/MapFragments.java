@@ -15,9 +15,11 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.Marker;
 import com.phongnguyen93.medicare.R;
+import com.phongnguyen93.medicare.maps.LocationService;
 
 public class MapFragments extends Fragment {
 
+    private LocationService locationService;
     public GoogleMap mMap;
     MapView mMapView;
 
@@ -25,6 +27,7 @@ public class MapFragments extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        locationService = new LocationService(getContext());
     }
 
     @Override

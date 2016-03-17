@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -15,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -26,7 +24,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.adapters.MyPageViewAdapter;
@@ -36,11 +34,10 @@ import com.phongnguyen93.medicare.functions.FunctionFavDoctor;
 import com.phongnguyen93.medicare.functions.FunctionUser;
 import com.phongnguyen93.medicare.extras.En_Decrypt;
 import com.phongnguyen93.medicare.model.User;
-import com.phongnguyen93.medicare.ui_view.NonSwipeableViewPager;
+import com.phongnguyen93.medicare.notification.InAppNotification;
 import com.phongnguyen93.medicare.fragments.ListFragment;
 import com.phongnguyen93.medicare.fragments.SecondFragment;
 import com.phongnguyen93.medicare.fragments.TestFragment;
-import com.phongnguyen93.medicare.maps.LocationService;
 import com.phongnguyen93.medicare.maps.MapOperations;
 import com.phongnguyen93.medicare.ui_view.tabs.SlidingTabLayout;
 
@@ -58,14 +55,14 @@ import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends BaseActivity implements ListFragment.OnFragmentInteractionListener,
         SecondFragment.OnFragmentInteractionListener,
-        FavFragment.OnFragmentInteractionListener, View.OnClickListener, ViewPager.OnPageChangeListener {
+        FavFragment.OnFragmentInteractionListener, View.OnClickListener, ViewPager.OnPageChangeListener,
+        InAppNotification.SnackBarAction{
     public static final int LIST_FRAGMENT_ID = 0;
     public static final int MAP_FRAGMENT_ID = 1;
     public static final int SCHEDULE_FRAGMENT_ID = 2;
 
     public static final int ALERT_SNACKBAR = 0;
     public static final int WARNING_SNACKBAR = 1;
-    public static final int INFO_SNACKBAR = 2;
 
     public static final String CURRENT_TAB = "currentTab";
     private static final String PREFS_NAME = "myPreferences";
@@ -74,9 +71,9 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
     private FunctionUser functionUser;
-    private  LocationService locationService;
-    private Snackbar snackbarAlert;
+    private InAppNotification notification;
     private int currentPage;
+    private LinearLayout linearLayout;
     private FunctionFavDoctor functionFavDoctor;
 
     @Override
@@ -90,10 +87,12 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         setSupportActionBar(toolbar);
         //set up needed services
         functionUser = new FunctionUser(getApplicationContext());
-        locationService = new LocationService(getBaseContext());
+        notification = new InAppNotification(this);
         User user = functionUser.getCurrentUser();
         functionFavDoctor = new FunctionFavDoctor(getApplicationContext());
         functionFavDoctor.setupData(user.getId());
+
+        linearLayout = (LinearLayout) findViewById(R.id.main_layout);
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 
@@ -116,54 +115,9 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt(CURRENT_TAB, currentPage);
         // Commit the edits!
-        editor.commit();
+        editor.apply();
     }
 
-    //display snackbar depend on @param type
-    private void displaySnackbar(int type) {
-        View layout = findViewById(R.id.main_layout);
-        View sbView;
-        TextView textView;
-        switch (type) {
-            //display disconnection alert snack bar
-            case ALERT_SNACKBAR:
-                snackbarAlert = Snackbar.make(layout, getResources().getString(R.string.disconnect_noti), Snackbar.LENGTH_INDEFINITE)
-                        .setAction(getResources().getString(R.string.empty_button), new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                startActivity(new Intent(Settings.ACTION_SETTINGS));
-
-                            }
-                        })
-                        .setActionTextColor(Color.WHITE);
-                sbView = snackbarAlert.getView();
-                textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-                textView.setTextColor(Color.WHITE);
-                sbView.setBackgroundColor(Color.RED);
-                snackbarAlert.show();
-                break;
-            //display slow connection warning snack bar
-            case WARNING_SNACKBAR:
-                Snackbar snackbarWarning = Snackbar.make(layout, getResources().getString(R.string.slow_connect_noti), Snackbar.LENGTH_LONG);
-                sbView = snackbarWarning.getView();
-                textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-                textView.setTextColor(Color.WHITE);
-                sbView.setBackgroundColor(Color.YELLOW);
-                snackbarWarning.show();
-                break;
-            //display confirm connected success snackbar
-            case INFO_SNACKBAR:
-                Snackbar snackbarInfo = Snackbar.make(layout, getResources().getString(R.string.success_connect_noti), Snackbar.LENGTH_SHORT);
-                sbView = snackbarInfo.getView();
-                textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-                textView.setTextColor(Color.WHITE);
-                sbView.setBackgroundColor(getResources().getColor(R.color.accent));
-                snackbarInfo.show();
-                break;
-        }
-
-
-    }
 
     //register the NetworkReciver to check connection change
     private void setupConnCheck() {
@@ -176,15 +130,17 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
     //Handle the connection change
     public void doCheckConn(boolean isConnected, boolean isSlowConn) {
-
-        if (isConnected && isSlowConn) displaySnackbar(WARNING_SNACKBAR);
-        if (!isConnected)
-            displaySnackbar(ALERT_SNACKBAR);
-        else {
-            if (snackbarAlert != null) {
-                snackbarAlert.dismiss();
-            }
+     String displayText;
+        if (isConnected && isSlowConn) {
+            displayText = getResources().getString(R.string.slow_connect_noti);
+            notification.displaySnackbar(WARNING_SNACKBAR, linearLayout, displayText, null);
         }
+        if (!isConnected) {
+            displayText = getResources().getString(R.string.disconnect_noti);
+            String actionText = getResources().getString(R.string.empty_button);
+            notification.displaySnackbar(ALERT_SNACKBAR, linearLayout, displayText,actionText);
+        }else
+            notification.hideSnackbar();
     }
 
     //Set up navigation drawer
@@ -391,6 +347,11 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    @Override
+    public void setSnackBarAction(View v) {
+        startActivity(new Intent(Settings.ACTION_SETTINGS));
     }
 
 

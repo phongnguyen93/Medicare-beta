@@ -35,7 +35,7 @@ public class MapOperations extends MapFragments implements ClusterManager.OnClus
     AlertDialog progressDialog;
     private ClusterManager<Doctor> mClusterManager;
     private LatLng myLocation;
-    private LocationManager mLocationManager;
+
 
     protected void start() {
         myLocation = LocationService.getCurrentLocation();

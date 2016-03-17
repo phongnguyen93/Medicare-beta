@@ -3,10 +3,8 @@ package com.phongnguyen93.medicare.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +18,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 
 
 import com.phongnguyen93.medicare.R;
@@ -31,23 +28,26 @@ import com.phongnguyen93.medicare.functions.FunctionFavDoctor;
 import com.phongnguyen93.medicare.functions.FunctionUser;
 import com.phongnguyen93.medicare.model.Doctor;
 import com.phongnguyen93.medicare.model.User;
+import com.phongnguyen93.medicare.notification.InAppNotification;
 
 import java.util.ArrayList;
 
 
-public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemClickListener, PopupMenu.OnMenuItemClickListener {
-    // TODO: Rename parameter arguments, choose names that match
+public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemClickListener, PopupMenu.OnMenuItemClickListener,InAppNotification.SnackBarAction {
+    private static final int ACTION_SNACKBAR = 4;
 
-    private RecyclerView rvContacts;
     private Context context;
     private ArrayList<Doctor> doctors;
     private RecyclerViewAdapter adapter;
     private OnFragmentInteractionListener mListener;
     private FunctionFavDoctor functionFavDoctor;
     private LinearLayout linearLayout;
+    private InAppNotification notification;
 
     private User user;
+    private Doctor tempDoctor;
     private static int LIST_ITEM_POSITION;
+    private static int PREVIOUS_ITEM_POSITION;
     private static final int FAV_FRAGMENT_ID = 3;
 
     //Default values for popup menu actions
@@ -56,6 +56,8 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
     private static final int ACTION_UNFAV = 2;
 
     private static final String INTENT_EXTRA = "doctor";
+    private ViewStub empty_view;
+    private RecyclerView rvContacts;
 
     public FavFragment() {
         // Required empty public constructor
@@ -69,6 +71,7 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
         setHasOptionsMenu(true);
         FunctionUser functionUser = new FunctionUser(getContext());
         user = functionUser.getCurrentUser();
+        notification = new InAppNotification(this);
     }
 
     @Override
@@ -90,7 +93,7 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
     //Register and setup views for this fragment
     private void setupView(View v) {
         rvContacts = (RecyclerView) v.findViewById(R.id.recycler_view);
-        ViewStub empty_view = (ViewStub) v.findViewById(R.id.empty_view);
+        empty_view = (ViewStub) v.findViewById(R.id.empty_view);
         rvContacts.setVisibility(View.GONE);
         empty_view.setVisibility(View.VISIBLE);
         //set up recycler view
@@ -118,7 +121,7 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
         if (itemView.getId() == R.id.img_btn) {
             showPopup(itemView);
         } else {
-            viewProfile(doctors.get(position));
+            viewProfile();
         }
     }
     //Show popup menu on icon click
@@ -150,19 +153,19 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
 
     //Handle action type on popup menu item click
     private void actionPopupMenu(int actionType) {
-        Doctor doctor = doctors.get(LIST_ITEM_POSITION);
+
         switch (actionType) {
             //view doctor's profile
             case ACTION_VIEW_DETAIL:
-                viewProfile(doctor);
+                viewProfile();
                 break;
             //make quick booking with doctor
             case ACTION_QUICK_BOOKING:
-                quickBooking(doctor);
+                quickBooking();
                 break;
             //unfav doctor
             case ACTION_UNFAV:
-                unFav(doctor);
+                unFav();
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown action :" + actionType);
@@ -170,49 +173,66 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
     }
 
     //remove doctor from list, unfav doctor and display snackbar for undo action
-    private void unFav(Doctor doctor){
+    private void unFav(){
+        PREVIOUS_ITEM_POSITION =LIST_ITEM_POSITION;
+        setTempDoctor(doctors.get(LIST_ITEM_POSITION));
         doctors.remove(LIST_ITEM_POSITION);
         adapter.notifyDataSetChanged();
-        String dr_id = doctor.getId();
-        functionFavDoctor.removeFavDoctor(dr_id, user.getId());
-        displayUndoSnackbar(doctor);
+        checkDataSetForLayoutChange();
+        functionFavDoctor.removeFavDoctor(tempDoctor.getId(), user.getId());
+        //display snackbar for undo action
+        String actionText = context.getResources().getString(R.string.unfav_undo);
+        String displayText = context.getResources().getString(R.string.unfav_noti);
+        notification.displaySnackbar(ACTION_SNACKBAR,linearLayout,displayText,actionText);
     }
 
     //go to profile activity with selected doctor
-    private void viewProfile(Doctor doctor) {
+    private void viewProfile() {
+        Doctor doctor = doctors.get(LIST_ITEM_POSITION);
         Intent t = new Intent(context, ProfileActivity.class);
         t.putExtra(INTENT_EXTRA, doctor);
         startActivity(t);
     }
 
     //go to booking activity with selected doctor
-    private void quickBooking(Doctor doctor) {
+    private void quickBooking() {
+        Doctor doctor = doctors.get(LIST_ITEM_POSITION);
         Intent t = new Intent(context, BookingActivity.class);
         t.putExtra(INTENT_EXTRA, doctor);
         startActivity(t);
     }
 
-    //Show snackbar to display undo action
-    private void displayUndoSnackbar(final Doctor doctor) {
-        Snackbar snackbar = Snackbar.make(linearLayout, getResources().getString(R.string.unfav_noti), Snackbar.LENGTH_LONG)
-                .setAction(getResources().getString(R.string.unfav_undo), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        functionFavDoctor.addFavDoctor(doctor, user.getId());
-                        doctors.add(LIST_ITEM_POSITION,doctor);
-                        adapter.notifyDataSetChanged();
-                    }
-                })
-                .setActionTextColor(getResources().getColor(R.color.primary));
-        View sbView = snackbar.getView();
-        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
-        sbView.setBackgroundColor(Color.BLACK);
-        snackbar.show();
+
+    // Undo action on snack bar action
+    @Override
+    public void setSnackBarAction(View v) {
+        functionFavDoctor.addFavDoctor(getTempDoctor(), user.getId());
+        doctors.add(PREVIOUS_ITEM_POSITION, tempDoctor);
+        adapter.notifyDataSetChanged();
+        checkDataSetForLayoutChange();
+    }
+
+    // Check data set items count to determine layout
+    private void checkDataSetForLayoutChange(){
+        if(adapter.getItemCount()>0) {
+            rvContacts.setVisibility(View.VISIBLE);
+            empty_view.setVisibility(View.GONE);
+        }
+        if(adapter == null ||adapter.getItemCount()==0){
+            rvContacts.setVisibility(View.GONE);
+            empty_view.setVisibility(View.VISIBLE);
+        }
+
     }
 
 
+    private Doctor getTempDoctor() {
+        return tempDoctor;
+    }
 
+    private void setTempDoctor(Doctor tempDoctor) {
+        this.tempDoctor = tempDoctor;
+    }
 
 
     /**
@@ -240,6 +260,7 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
                     + " must implement OnFragmentInteractionListener");
         }
     }
+
 
     @Override
     public void onDetach() {
