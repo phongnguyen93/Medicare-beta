@@ -126,4 +126,11 @@
     <string name="popupmenu_quick_booking">Quick booking</string>
     <string name="popupmenu_unfav">Unfav</string>
     <string name="unfav_undo">Undo</string>
+    <string name="gcm_defaultSenderId">694600385114</string>
+    <string name="confirm_noti_doctor">Doctor : </string>
+    <string name="confirm_noti_date">Date  : </string>
+    <string name="confirm_noti_time">Time  : </string>
+    <string name="confirm_noti_address">Address : </string>
+    <string name="confirm_noti_title">Booking confirmed</string>
+    <string name="confirm_noti_message">Your booking has been confirmed</string>
 </resources>

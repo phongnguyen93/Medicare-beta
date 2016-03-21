@@ -12,10 +12,12 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -26,19 +28,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.adapters.MyPageViewAdapter;
 import com.phongnguyen93.medicare.database.DbOperations;
-import com.phongnguyen93.medicare.fragments.FavFragment;
-import com.phongnguyen93.medicare.functions.FunctionFavDoctor;
-import com.phongnguyen93.medicare.functions.FunctionUser;
 import com.phongnguyen93.medicare.extras.En_Decrypt;
-import com.phongnguyen93.medicare.model.User;
-import com.phongnguyen93.medicare.notification.InAppNotification;
+import com.phongnguyen93.medicare.fragments.FavFragment;
 import com.phongnguyen93.medicare.fragments.ListFragment;
 import com.phongnguyen93.medicare.fragments.SecondFragment;
 import com.phongnguyen93.medicare.fragments.TestFragment;
+import com.phongnguyen93.medicare.functions.FunctionFavDoctor;
+import com.phongnguyen93.medicare.functions.FunctionUser;
 import com.phongnguyen93.medicare.maps.MapOperations;
+import com.phongnguyen93.medicare.model.User;
+import com.phongnguyen93.medicare.notification.InAppNotification;
+import com.phongnguyen93.medicare.notification.push_notification.RegistrationIntentService;
 import com.phongnguyen93.medicare.ui_view.tabs.SlidingTabLayout;
 
 import org.json.JSONException;
@@ -54,19 +59,21 @@ import java.util.ArrayList;
 import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends BaseActivity implements ListFragment.OnFragmentInteractionListener,
-        SecondFragment.OnFragmentInteractionListener,
+        SecondFragment.OnFragmentInteractionListener, TestFragment.OnFragmentInteractionListener,
         FavFragment.OnFragmentInteractionListener, View.OnClickListener, ViewPager.OnPageChangeListener,
-        InAppNotification.SnackBarAction{
+        InAppNotification.SnackBarAction {
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
     public static final int LIST_FRAGMENT_ID = 0;
     public static final int MAP_FRAGMENT_ID = 1;
     public static final int SCHEDULE_FRAGMENT_ID = 2;
 
-    public static final int ALERT_SNACKBAR = 0;
-    public static final int WARNING_SNACKBAR = 1;
 
     public static final String CURRENT_TAB = "currentTab";
     private static final String PREFS_NAME = "myPreferences";
 
+    private SlidingTabLayout mSlidingTabLayout;
+    private Fragment fragment;
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
@@ -75,6 +82,8 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     private int currentPage;
     private LinearLayout linearLayout;
     private FunctionFavDoctor functionFavDoctor;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private boolean isReceiverRegistered;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,15 +103,65 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
         linearLayout = (LinearLayout) findViewById(R.id.main_layout);
 
+
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 
-        if(settings != null){
-            currentPage = settings.getInt(CURRENT_TAB,LIST_FRAGMENT_ID);
+        if (settings != null) {
+            currentPage = settings.getInt(CURRENT_TAB, LIST_FRAGMENT_ID);
         }
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(RegistrationIntentService.SENT_TOKEN_TO_SERVER, false);
+                if (sentToken) {
+                    notification.displaySnackbar(InAppNotification.INFO_SNACKBAR,
+                            linearLayout, "Token sent to server", null);
+                } else {
+                    notification.displaySnackbar(InAppNotification.WARNING_SNACKBAR,
+                            linearLayout, "Token NOT sent to server", null);
+                }
+            }
+        };
+
+        // Registering BroadcastReceiver
+        registerReceiver();
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
+
         setupDrawer();
         setupConnCheck();
         setupTabs(currentPage);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver();
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        isReceiverRegistered = false;
+        super.onPause();
+    }
+
+
+    private void registerReceiver() {
+        if (!isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                    new IntentFilter(RegistrationIntentService.REGISTRATION_COMPLETE));
+            isReceiverRegistered = true;
+        }
     }
 
 
@@ -130,16 +189,16 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
     //Handle the connection change
     public void doCheckConn(boolean isConnected, boolean isSlowConn) {
-     String displayText;
+        String displayText;
         if (isConnected && isSlowConn) {
             displayText = getResources().getString(R.string.slow_connect_noti);
-            notification.displaySnackbar(WARNING_SNACKBAR, linearLayout, displayText, null);
+            notification.displaySnackbar(InAppNotification.WARNING_SNACKBAR, linearLayout, displayText, null);
         }
         if (!isConnected) {
             displayText = getResources().getString(R.string.disconnect_noti);
             String actionText = getResources().getString(R.string.empty_button);
-            notification.displaySnackbar(ALERT_SNACKBAR, linearLayout, displayText,actionText);
-        }else
+            notification.displaySnackbar(InAppNotification.ALERT_SNACKBAR, linearLayout, displayText, actionText);
+        } else
             notification.hideSnackbar();
     }
 
@@ -170,7 +229,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
                 getSupportFragmentManager(), fragments);
         mPager.setAdapter(myPageViewAdapter);
         //setup Tab
-        SlidingTabLayout mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.tab_layout);
+        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.tab_layout);
 
         mSlidingTabLayout.setCustomTabView(R.layout.custom_tab, 0);
         mSlidingTabLayout.setDistributeEvenly(true);
@@ -181,9 +240,8 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     }
 
 
-
     private ActionBarDrawerToggle setupDrawerToggle() {
-        return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
+        return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open, R.string.drawer_close);
 
     }
 
@@ -202,38 +260,25 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     public void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the planet to show based on
         // position
-        if (menuItem.getItemId() == R.id.nav_exit){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (menuItem.getItemId() == R.id.nav_exit) {
             signOut();
-        }else {
-            Fragment fragment = null;
-            Class fragmentClass;
+        } else {
             switch (menuItem.getItemId()) {
                 case R.id.nav_first_fragment:
-                    fragmentClass = ListFragment.class;
+                    fragmentManager.beginTransaction().remove(fragment).commit();
                     break;
                 case R.id.nav_second_fragment:
-                    fragmentClass = TestFragment.class;
+                    fragment = new TestFragment();
+                    fragmentManager.beginTransaction().replace(R.id.main_panel, fragment).commit();
                     break;
                 case R.id.nav_third_fragment:
-                    fragmentClass = TestFragment.class;
+                    fragment = new SecondFragment();
+                    fragmentManager.beginTransaction().replace(R.id.main_panel, fragment).commit();
                     break;
                 default:
-                    fragmentClass = ListFragment.class;
+                    throw new UnsupportedOperationException("Unknown fragment");
             }
-
-            try {
-                fragment = (Fragment) fragmentClass.newInstance();
-                Log.d("check fragment: ", "fragment=" + fragment.toString());
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d("check fragment", e.getMessage());
-            }
-
-            // Insert the fragment by replacing any existing fragment
-
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.viewPager, fragment).commit();
         }
         // Highlight the selected item, update the title, and close the drawer
         menuItem.setChecked(true);
@@ -297,7 +342,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-         drawerToggle.syncState();
+        drawerToggle.syncState();
 
     }
 
@@ -350,10 +395,26 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     }
 
     @Override
-    public void setSnackBarAction(View v) {
+    public void setSnackBarAction() {
         startActivity(new Intent(Settings.ACTION_SETTINGS));
     }
 
+
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i("Play service", "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
 
     //Make a API call and receive data
     public class NetworkConnection extends AsyncTask<String, Void, Boolean> {
@@ -362,7 +423,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
         @Override
         protected Boolean doInBackground(String... params) {
-            Boolean isRemoved= false;
+            Boolean isRemoved = false;
             try {
                 // Open a stream from the URL
                 InputStream stream = new URL(params[0]).openStream();
@@ -380,8 +441,8 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
                 stream.close();
 
                 // Convert result to JSONObject
-                JSONObject jsonObject =  new JSONObject(result.toString());
-                isRemoved= jsonObject.getBoolean("status");
+                JSONObject jsonObject = new JSONObject(result.toString());
+                isRemoved = jsonObject.getBoolean("status");
             } catch (IOException e) {
                 Log.e(mLogTag, "JSON file could not be read");
             } catch (JSONException e) {
@@ -401,6 +462,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
         }
     }
+
 
     /**
      * This BroadcastReceiver intercepts the android.net.ConnectivityManager.CONNECTIVITY_ACTION,

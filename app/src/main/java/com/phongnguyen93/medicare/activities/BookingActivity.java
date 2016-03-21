@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import com.phongnguyen93.medicare.ui_view.calendarpicker.CalendarPickerView;
 import com.phongnguyen93.medicare.ui_view.dateslider.DateSlider;
 import com.phongnguyen93.medicare.ui_view.dateslider.TimeSlider;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,12 +37,11 @@ import java.util.Locale;
 public class BookingActivity extends BaseActivity implements View.OnTouchListener,JSONObjectRequest.AsyncResponse, View.OnClickListener {
     private static final int DATE_SLIDER_DIALOG_ID = 1;
     private static final int TIME_SLIDER_DIALOG_ID = 2;
-    final Calendar myCalendar = Calendar.getInstance();
     MaterialEditText edit_date, edit_time, edit_drName, edit_phone, edit_email;
     private Doctor doctor;
     private User user;
     private FunctionUser functionUser;
-    private String inserDate;
+    private String insertDate;
     private String inserTime;
     private AlertDialog theDialog;
     private CalendarPickerView dialogView;
@@ -68,7 +69,9 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
         edit_email = (MaterialEditText)findViewById(R.id.edit_email);
         edit_date = (MaterialEditText)findViewById(R.id.edit_date);
         edit_time = (MaterialEditText)findViewById(R.id.edit_time);
+
         doctor = getIntent().getParcelableExtra("doctor");
+
         edit_drName.setText(doctor.getName());
         edit_drName.setClickable(false);
         edit_time.setOnTouchListener(this);
@@ -77,41 +80,41 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
     }
 
     private void updateLabel(Date selected,String type) {
-    switch (type){
-        case "date":
-            String myDateFormat = "dd/MM/yyyy"; //In which you need put here
-            SimpleDateFormat dateFormat = new SimpleDateFormat(myDateFormat, Locale.US);
-            edit_date.setText(dateFormat.format(selected));
-            String mdateFormat = "yyyy-MM-dd";
-            SimpleDateFormat insertDateFormat= new SimpleDateFormat(mdateFormat,Locale.US);
-            inserDate = insertDateFormat.format(selected);
-            break;
-        case "time":
-            String myTimeFormat = "HH:mm"; //In which you need put here
-            SimpleDateFormat timeFormat = new SimpleDateFormat(myTimeFormat, Locale.US);
-            edit_time.setText(timeFormat.format(selected));
-            String mtimeFormat = "HH:mm:ss";
-            SimpleDateFormat insertTimeFormat= new SimpleDateFormat(mtimeFormat,Locale.US);
-            inserTime = insertTimeFormat.format(selected);
-    }
+        switch (type){
+            case "date":
+                String myDateFormat = "dd/MM/yyyy"; //In which you need put here
+                SimpleDateFormat dateFormat = new SimpleDateFormat(myDateFormat, Locale.US);
 
+                String mdateFormat = "yyyy-MM-dd";
+                SimpleDateFormat insertDateFormat= new SimpleDateFormat(mdateFormat,Locale.US);
+                insertDate = insertDateFormat.format(selected);
+
+                edit_date.setText(insertDate);
+                Log.d("insert date",insertDateFormat.format(selected));
+                break;
+            case "time":
+                String myTimeFormat = "HH:mm"; //In which you need put here
+                SimpleDateFormat timeFormat = new SimpleDateFormat(myTimeFormat, Locale.US);
+                edit_time.setText(timeFormat.format(selected));
+                String mtimeFormat = "HH:mm:ss";
+                SimpleDateFormat insertTimeFormat= new SimpleDateFormat(mtimeFormat,Locale.US);
+                inserTime = insertTimeFormat.format(selected);
+                break;
+        }
     }
 
     public void setupActionBar(){
         assert getSupportActionBar() != null;
         final View customActionBarView;
         customActionBarView = View.inflate(getApplicationContext(),R.layout.actionbar_custom_view_done_cancel,null);
-        customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
+        customActionBarView.findViewById(R.id.actionbar_done);
+        customActionBarView.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String dr_id = doctor.getId();
-                        String user_id = user.getId();
-                        String time = inserTime;
-                        String date = inserDate;
                         String phone = edit_phone.getText().toString();
                         String email = edit_email.getText().toString();
-                        addBooking(user_id,dr_id,date,time,email,phone);
+                        addBooking(user.getId(), doctor.getId(),edit_date.getText().toString(), edit_time.getText().toString()+":00", email, phone);
                     }
                 });
         customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
@@ -263,10 +266,11 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.dateSliderCancelButton:
-                theDialog.dismiss();
+                theDialog.hide();
             case R.id.dateSliderOkButton:
                 updateLabel(dialogView.getSelectedDate(),"date");
-                theDialog.dismiss();
+                theDialog.hide();
+
         }
     }
 }

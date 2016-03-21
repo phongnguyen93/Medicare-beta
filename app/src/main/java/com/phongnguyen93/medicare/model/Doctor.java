@@ -19,11 +19,12 @@ public class Doctor implements ClusterItem , Parcelable{
     private String spec;
     private String workdays;
     private String worktime;
+    private String image;
     private double distance;
     private boolean active;
     private final LatLng mPosition;
 
-    public Doctor(String id, String name, String email, String phone, String license, String spec, String address, boolean active, LatLng mPosition, double distance,String workdays,String worktime) {
+    public Doctor(String id, String name, String email, String phone, String license, String spec, String address, boolean active, LatLng mPosition, double distance,String workdays,String worktime,String image) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -36,6 +37,7 @@ public class Doctor implements ClusterItem , Parcelable{
         this.distance=distance;
         this.workdays=workdays;
         this.worktime=worktime;
+        this.image =image;
     }
 
     public String getId() {
@@ -102,10 +104,6 @@ public class Doctor implements ClusterItem , Parcelable{
         this.active = active;
     }
 
-    public String toString() {
-        return "id: " + this.id + "\nname: " + this.name + "\nemail: " + this.email + "\nphone: " + this.phone + "\nlicense: " + this.license + "\nspeciality: " + this.spec + "\naddress: " + this.address + "\nactive: " + this.active;
-    }
-
     @Override
     public LatLng getPosition() {
         return mPosition;
@@ -152,6 +150,7 @@ public class Doctor implements ClusterItem , Parcelable{
         out.writeString(workdays);
         out.writeString(worktime);
         out.writeDouble(distance);
+        out.writeString(image);
     }
     private Doctor(Parcel in) {
         id = in.readString();
@@ -164,6 +163,7 @@ public class Doctor implements ClusterItem , Parcelable{
         workdays = in.readString();
         worktime = in.readString();
         distance = in.readDouble();
+        image = in.readString();
         mPosition = null;
     }
     public static final Parcelable.Creator<Doctor> CREATOR
@@ -182,6 +182,14 @@ public class Doctor implements ClusterItem , Parcelable{
             return new Doctor[size];
         }
     };
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 }
 
 

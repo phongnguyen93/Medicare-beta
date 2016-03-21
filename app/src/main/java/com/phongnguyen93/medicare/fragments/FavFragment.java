@@ -205,7 +205,7 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
 
     // Undo action on snack bar action
     @Override
-    public void setSnackBarAction(View v) {
+    public void setSnackBarAction() {
         functionFavDoctor.addFavDoctor(getTempDoctor(), user.getId());
         doctors.add(PREVIOUS_ITEM_POSITION, tempDoctor);
         adapter.notifyDataSetChanged();

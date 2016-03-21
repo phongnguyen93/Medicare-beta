@@ -20,6 +20,7 @@ import com.phongnguyen93.medicare.model.Doctor;
 import com.phongnguyen93.medicare.model.User;
 import com.phongnguyen93.medicare.notification.InAppNotification;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.squareup.picasso.Picasso;
 
 public class ProfileActivity extends AppCompatActivity implements FloatingActionButton.OnClickListener {
     private static final int NORMAL_SNACKBAR = 3 ;
@@ -65,6 +66,13 @@ public class ProfileActivity extends AppCompatActivity implements FloatingAction
         fav_text = (TextView) findViewById(R.id.fav_text);
 
         doctor =getIntent().getParcelableExtra("doctor");
+
+        Picasso.with(getBaseContext())
+                .load(doctor.getImage())
+                .placeholder(R.drawable.applogo)
+                .error(R.drawable.applogo)
+                .into(imageView);
+
         name.setText(doctor.getName());
         address.setText(doctor.getAddress());
         email.setText(doctor.getEmail());
@@ -73,7 +81,6 @@ public class ProfileActivity extends AppCompatActivity implements FloatingAction
         phone.setText(doctor.getPhone());
         workdays.setText(doctor.getWorkdays());
         worktime.setText(doctor.getWorktime());
-        imageView.setImageResource(R.drawable.img_5);
         checkIsFav(doctor.getId());
 
         fab1.setOnClickListener(this);

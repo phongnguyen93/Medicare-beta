@@ -47,7 +47,7 @@ public class JSONArrayRequest extends AsyncTask<String, Void, JSONArray> {
 
             // Convert result to JSONObject
             jsonArray = new JSONArray(result.toString());
-
+            Log.d(mLogTag,result.toString());
         } catch (JSONException jsonEx) {
             Log.e("JSON Error", jsonEx.getMessage());
             if (jsonArray.length() == 0) {

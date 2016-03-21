@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.extras.Utils;
 import com.phongnguyen93.medicare.model.Doctor;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -31,8 +32,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static final int LIST_FRAGMENT_ID = 1;
     private static final int FAV_FRAGMENT_ID = 3;
 
-    private ViewStub normal_item_layout, fav_item_layout;
-
+    private Context context;
     //Store variable for list of doctors
     private ArrayList<Doctor> doctors;
 
@@ -45,15 +45,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
+        context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-
-
         Log.d("view type", viewType + "");
         if (viewType == VIEW_TYPE_DATA) {
             View view = inflater.inflate(R.layout.card_layout, parent, false);
-            normal_item_layout = (ViewStub) view.findViewById(R.id.normal_item);
-            fav_item_layout = (ViewStub) view.findViewById(R.id.fav_item);
+            ViewStub normal_item_layout = (ViewStub) view.findViewById(R.id.normal_item);
+            ViewStub fav_item_layout = (ViewStub) view.findViewById(R.id.fav_item);
             switch (FRAGMENT_ID){
                 case LIST_FRAGMENT_ID:
                     normal_item_layout.setVisibility(View.VISIBLE);
@@ -82,14 +80,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             TextView workdays = viewHolder.workdaysTextView;
             TextView worktime = viewHolder.worktimeTextView;
             TextView distance = viewHolder.distanceTextView;
-            ImageView img_view = viewHolder.img_view;
+            ImageView imageView = viewHolder.img_view;
+            String imagePath = doctor.getImage();
+            Picasso.with(context)
+                    .load(imagePath)
+                    .placeholder(R.drawable.applogo)
+                    .error(R.drawable.applogo)
+                    .into(imageView);
             name.setText(doctor.getName());
             address.setText(doctor.getSpec());
             workdays.setText(doctor.getWorkdays());
-            worktime.setText(doctor.getWorktime());
-            img_view.setImageResource(R.drawable.applogo);
+            worktime.setText(Utils.convertWorktime(doctor.getWorktime(),context));
             if (FRAGMENT_ID == LIST_FRAGMENT_ID)
-                distance.setText(Utils.formatNumber(doctor.getDistance()) + "");
+                distance.setText(Utils.formatNumber(doctor.getDistance()));
         } else if (holder instanceof LoadingViewHolder) {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
             loadingViewHolder.progressBar.setIndeterminate(true);
@@ -174,6 +177,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             });
 
         }
+
 
     }
 }

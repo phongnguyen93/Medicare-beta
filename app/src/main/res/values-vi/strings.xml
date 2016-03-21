@@ -105,4 +105,10 @@
     <string name="popupmenu_quick_booking">Đặt lịch nhanh</string>
     <string name="popupmenu_unfav">Bỏ thích</string>
     <string name="unfav_undo">Hoàn tác</string>
+    <string name="confirm_noti_doctor">Bác sĩ  : </string>
+    <string name="confirm_noti_date">Ngày    : </string>
+    <string name="confirm_noti_time">Giờ     : </string>
+    <string name="confirm_noti_address">Địa chỉ : </string>
+    <string name="confirm_noti_title">Xác nhận lịch khám</string>
+    <string name="confirm_noti_message">Lịch khám của bạn đã được xác nhận</string>
 </resources>

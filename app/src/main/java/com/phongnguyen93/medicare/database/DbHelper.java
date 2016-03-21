@@ -52,5 +52,6 @@ public class DbHelper{
         public static final String DR_LOCATION = "dr_location";
         // Doctor is favoured by user
         public static final String IS_FAV = "is_fav";
+
     }
 }

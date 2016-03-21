@@ -77,7 +77,8 @@ public class FunctionFavDoctor implements FavDoctor, JSONArrayRequest.AsyncRespo
             String workdays = cursor.getString(8);
             String worktime = cursor.getString(9);
             String license = cursor.getString(5);
-            doctors.add(new Doctor(id,name,email,phone,license,spec,address,true,null,0,workdays,worktime));
+            String image = cursor.getString(6);
+            doctors.add(new Doctor(id,name,email,phone,license,spec,address,true,null,0,workdays,worktime,image));
         }while (cursor.moveToNext());
         return doctors;
     }
@@ -108,7 +109,7 @@ public class FunctionFavDoctor implements FavDoctor, JSONArrayRequest.AsyncRespo
         String email = doctor.getEmail();
         String address = doctor.getAddress();
         String phone = doctor.getPhone();
-        String image = "";
+        String image = doctor.getImage();
         int rating  = 0;
         String spec = doctor.getSpec();
         String workdays = doctor.getWorkdays();
@@ -143,13 +144,13 @@ public class FunctionFavDoctor implements FavDoctor, JSONArrayRequest.AsyncRespo
                 String email = doctor.getEmail();
                 String address = doctor.getAddress();
                 String phone = doctor.getPhone();
-                String image = "";
                 int rating  = 0;
                 String spec = doctor.getSpec();
                 String workdays = doctor.getWorkdays();
                 String worktime = doctor.getWorktime();
                 String location = "";
                 String license = doctor.getLicense();
+                String image = doctor.getImage();
                 int  isFav = 1;
                 dop.insertDoctor(dop,
                         id,name,address,email,phone,license,image,spec,
