@@ -13,10 +13,11 @@ public class Booking implements Parcelable {
     private String time;
     private String phone;
     private String email;
+    private String address;
     private boolean checked;
     private int rebook_days;
 
-    public Booking(int id,String dr_name,String date,String time,String phone,String email,boolean checked, int rebook_days){
+    public Booking(int id,String dr_name,String date,String time,String phone,String email,boolean checked, int rebook_days, String address){
         this.id = id;
         this.dr_name= dr_name;
         this.setDate(date);
@@ -25,6 +26,7 @@ public class Booking implements Parcelable {
         this.email = email;
         this.checked = checked;
         this.rebook_days = rebook_days;
+        this.setAddress(address);
     }
 
     protected Booking(Parcel in) {
@@ -33,6 +35,7 @@ public class Booking implements Parcelable {
         phone = in.readString();
         email = in.readString();
         rebook_days = in.readInt();
+        address = in.readString();
     }
 
     public static final Creator<Booking> CREATOR = new Creator<Booking>() {
@@ -59,6 +62,7 @@ public class Booking implements Parcelable {
         dest.writeString(phone);
         dest.writeString(email);
         dest.writeInt(rebook_days);
+        dest.writeString(address);
     }
 
     public int getId() {
@@ -125,5 +129,13 @@ public class Booking implements Parcelable {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

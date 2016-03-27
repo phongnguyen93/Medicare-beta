@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.database.DbOperations;
-import com.phongnguyen93.medicare.functions.FunctionUser;
+import com.phongnguyen93.medicare.functions.UserFunctions;
 import com.phongnguyen93.medicare.extras.En_Decrypt;
 import com.phongnguyen93.medicare.extras.Utils;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -36,7 +36,7 @@ import dmax.dialog.SpotsDialog;
 public class SignupActivity extends BaseActivity implements Button.OnClickListener {
     private String USER_ID, USER_PASS;
     SpotsDialog progressDialog;
-    FunctionUser functionUser;
+    UserFunctions userFunctions;
     com.rengwuxian.materialedittext.MaterialEditText edit_id,edit_name,edit_pass,edit_email,edit_phone;
     Button btn_create;
     @Override
@@ -44,7 +44,7 @@ public class SignupActivity extends BaseActivity implements Button.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         viewHolder();
-        functionUser = new FunctionUser(getApplicationContext());
+        userFunctions = new UserFunctions(getApplicationContext());
 
 
     }
@@ -193,7 +193,7 @@ public class SignupActivity extends BaseActivity implements Button.OnClickListen
             if(status) {
                 String id = edit_id.getText().toString().trim();
                 String pass = edit_pass.getText().toString();
-                functionUser.setCurrentUser(id,pass);
+                userFunctions.setCurrentUser(id,pass);
                 String token = jsonObject.getString("token");
                 DbOperations dp = new DbOperations(this);
                 Log.d("medicare", USER_ID);

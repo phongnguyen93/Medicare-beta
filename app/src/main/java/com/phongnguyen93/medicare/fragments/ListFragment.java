@@ -21,11 +21,11 @@ import com.phongnguyen93.medicare.activities.ProfileActivity;
 import com.phongnguyen93.medicare.activities.SearchResultActivity;
 import com.phongnguyen93.medicare.adapters.EndlessRecyclerViewScrollListener;
 import com.phongnguyen93.medicare.adapters.RecyclerViewAdapter;
-import com.phongnguyen93.medicare.json.JSONArrayRequest;
-import com.phongnguyen93.medicare.json.JSONParse;
+import com.phongnguyen93.medicare.thread.network_thread.JSONArrayRequest;
+import com.phongnguyen93.medicare.extras.JSONParse;
 import com.phongnguyen93.medicare.maps.LocationService;
 import com.phongnguyen93.medicare.model.Doctor;
-
+import android.support.design.widget.FloatingActionButton;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class ListFragment extends Fragment implements JSONArrayRequest.AsyncResp
     private RecyclerViewAdapter adapter = null;
     private LinearLayoutManager linearLayoutManager;
     private ViewStub empty_view, loading_view;
-    private android.support.design.widget.FloatingActionButton fab;
+    private FloatingActionButton fab;
 
     private static final int LIST_FRAGMENT_ID = 1;
 
@@ -78,20 +78,24 @@ public class ListFragment extends Fragment implements JSONArrayRequest.AsyncResp
         Doctors = new ArrayList<>();
         tempData = new ArrayList<>();
         requestDoctorList(limit);
-        context = getActivity().getApplicationContext();
+        context = getActivity();
         v = inflater.inflate(R.layout.list_fragment_layout, container, false);
-        rvContacts = (RecyclerView) v.findViewById(R.id.rvContacts);
+        rvContacts = (RecyclerView) v.findViewById(R.id.recycler_view);
         empty_view = (ViewStub) v.findViewById(R.id.empty_view);
         loading_view = (ViewStub) v.findViewById(R.id.loading_view);
-        fab = (android.support.design.widget.FloatingActionButton) v.findViewById(R.id.fab_search);
+        fab = (FloatingActionButton) v.findViewById(R.id.fab_search);
+        setupRecyclerView();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent t = new Intent(getActivity(), SearchResultActivity.class);
+
+                Intent t = new Intent(getContext(), SearchResultActivity.class);
                 startActivity(t);
             }
         });
-        setupRecyclerView();
+
+
+
         rvContacts.setVisibility(View.GONE);
         fab.setVisibility(View.GONE);
         empty_view.setVisibility(View.GONE);

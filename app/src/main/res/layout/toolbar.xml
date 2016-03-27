@@ -4,8 +4,8 @@
     android:id="@+id/toolbar"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:fitsSystemWindows="true"
-    android:minHeight="?attr/actionBarSize"
+
+    android:maxHeight="56dp"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     android:background="@color/primary">
 </android.support.v7.widget.Toolbar>

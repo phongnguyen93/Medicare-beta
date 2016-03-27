@@ -1,2 +1,2 @@
-include ':app', ':gcm-backend'
+include ':app', ':agendacalendarview'
 

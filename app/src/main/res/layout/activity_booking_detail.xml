@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/base_color"
+    tools:context="com.phongnguyen93.medicare.activities.BookingDetailActivity">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="@string/title_activity_booking_detail"
+        android:textColor="@color/primary"
+        android:textSize="20sp" />
+
+    <TableRow
+        android:padding="4dp"
+        android:gravity="center"
+        android:id="@+id/status_sector"
+        android:orientation="horizontal"
+        android:layout_below="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_gravity="center"
+            android:id="@+id/status_icon"
+            android:src="@drawable/ic_event_busy_red_500_18dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:padding="4dp"
+            android:layout_gravity="center"
+            android:text="@string/status_unchecked_text"
+            android:textSize="16sp"
+            android:textColor="@color/red"
+            android:id="@+id/status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </TableRow>
+
+    <ScrollView
+        android:layout_marginTop="32dp"
+        android:id="@+id/scroll_panel"
+        android:isScrollContainer="true"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/title"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/edittext_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/base_panel_bottom_divider"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_dr_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:digits="0,1,2,3,4,5,6,7,8,9,qwertzuiopasdfghjklyxcvbnm"
+                app:met_hideUnderline="true"
+                android:focusable="false"
+                android:hint="@string/dr_name_hint"
+                app:met_floatingLabel="highlight"
+                app:met_iconLeft="@drawable/ic_account_box_black_24dp"
+                app:met_primaryColor="@color/primary" />
+
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:editable="false"
+                app:met_hideUnderline="true"
+                android:hint="@string/date_hint"
+                app:met_floatingLabel="highlight"
+                app:met_iconLeft="@drawable/ic_today_black_24dp"
+                app:met_primaryColor="@color/primary" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:editable="false"
+                app:met_hideUnderline="true"
+                android:hint="@string/time_hint"
+                app:met_floatingLabel="highlight"
+                app:met_helperTextColor="@color/divider"
+                app:met_iconLeft="@drawable/ic_alarm_black_24dp"
+                app:met_primaryColor="@color/primary" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:hint="@string/edittext_email_hint"
+                android:inputType="textEmailAddress"
+                app:met_hideUnderline="true"
+                android:editable="false"
+                app:met_floatingLabel="highlight"
+                app:met_iconLeft="@drawable/_ic_email_black_24dp"
+                app:met_primaryColor="@color/primary"
+
+                />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:hint="@string/edittext_phone_hint"
+                android:inputType="phone"
+                app:met_hideUnderline="true"
+                android:editable="false"
+                app:met_floatingLabel="highlight"
+                app:met_iconLeft="@drawable/_ic_phone_black_24dp"
+                app:met_primaryColor="@color/primary" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:hint="@string/edittext_dr_address"
+                android:inputType="phone"
+                app:met_hideUnderline="true"
+                android:editable="false"
+                app:met_floatingLabel="highlight"
+                app:met_iconLeft="@drawable/ic_location_on_black_24dp"
+                app:met_primaryColor="@color/primary" />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

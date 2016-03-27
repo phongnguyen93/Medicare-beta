@@ -3,6 +3,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="API_KEY">AIzaSyAExCsBR4P4ov3Zgh5L0AU5vWbwNq3c48E</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="title_activity_maps">Map</string>
     <string name="start_button">Xem phòng khám gần nhất</string>
     <string name="zoom_button">Tìm thêm</string>
@@ -133,4 +134,88 @@
     <string name="confirm_noti_address">Address : </string>
     <string name="confirm_noti_title">Booking confirmed</string>
     <string name="confirm_noti_message">Your booking has been confirmed</string>
+    <string name="title_activity_booking_detail">Booking detail</string>
+    <string name="status_unchecked_text">Not checked</string>
+    <string name="status_checked_text">Checked</string>
+    <string name="checked_event_title">Checked booking</string>
+    <string name="unchecked_event_title">Unchecked booking</string>
+    <string name="minimize_doctor">Dr</string>
+    <string name="pref_confirm_booking_title">Booking confirm notification</string>
+    <string name="pref_confirm_booking_summary">Get notification when a booking is checked</string>
+    <string name="pref_upcoming_booking_title">Upcoming booking notification</string>
+    <string name="pref_upcoming_booking_summary">Get notification whenever a booking is upcoming</string>
+    <string name="pref_confirm_email_title">Confirm booking with email</string>
+    <string name="pref_confirm_email_summary">Get confirm email whenever a booking is checked</string>
+    <string name="prefs_web_page">More info</string>
+    <!--  Strings for possible PreferenceActivity Back/Next buttons -->
+    <string name="back_button_label">Back</string>
+    <string name="next_button_label">Next</string>
+
+    <!-- Optional button to Skip a PreferenceActivity [CHAR LIMIT=20] -->
+    <string name="skip_button_label">Skip</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+    <string name="pref_title_vibrate">Vibrate</string>
+    <string name="title_activity_settting">Setting</string>
+    <string name="signout_fail">Please try again later</string>
+    <string name="drawer_info">More info</string>
+    <string name="group_noti_title">Today you have</string>
+    <string name="alarm_noti_title">Upcoming booking</string>
+    <string name="alarm_noti_message">Today you have a booking at</string>
 </resources>

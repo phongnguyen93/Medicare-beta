@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.LocationManager;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,8 +18,8 @@ import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.activities.ProfileActivity;
 import com.phongnguyen93.medicare.extras.Utils;
 import com.phongnguyen93.medicare.fragments.MapFragments;
-import com.phongnguyen93.medicare.json.JSONArrayRequest;
-import com.phongnguyen93.medicare.json.JSONParse;
+import com.phongnguyen93.medicare.thread.network_thread.JSONArrayRequest;
+import com.phongnguyen93.medicare.extras.JSONParse;
 import com.phongnguyen93.medicare.model.Doctor;
 
 import org.json.JSONArray;
@@ -36,6 +35,10 @@ public class MapOperations extends MapFragments implements ClusterManager.OnClus
     private ClusterManager<Doctor> mClusterManager;
     private LatLng myLocation;
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 
     protected void start() {
         myLocation = LocationService.getCurrentLocation();

@@ -1,21 +1,17 @@
 package com.phongnguyen93.medicare.notification.push_notification;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.phongnguyen93.medicare.R;
-import com.phongnguyen93.medicare.functions.FunctionUser;
-import com.phongnguyen93.medicare.json.JSONObjectRequest;
+import com.phongnguyen93.medicare.functions.UserFunctions;
+import com.phongnguyen93.medicare.thread.network_thread.JSONObjectRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -67,7 +63,7 @@ public class RegistrationIntentService extends IntentService implements JSONObje
 
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
-        String request = BASE_URL+"user="+ new FunctionUser(getBaseContext()).getCurrentUser().getId()+"&token="+token;
+        String request = BASE_URL+"user="+ new UserFunctions(getBaseContext()).getCurrentUser().getId()+"&token="+token;
          JSONObjectRequest sendToken = new JSONObjectRequest(this);
         sendToken.execute(request);
         // if registration sent was successful, store a boolean that indicates whether the generated token has been sent to server

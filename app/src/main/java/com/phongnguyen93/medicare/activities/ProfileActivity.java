@@ -13,12 +13,12 @@ import android.widget.TextView;
 
 
 import com.phongnguyen93.medicare.R;
-import com.phongnguyen93.medicare.functions.FunctionFavDoctor;
+import com.phongnguyen93.medicare.functions.FavDoctorFunctions;
 
-import com.phongnguyen93.medicare.functions.FunctionUser;
+import com.phongnguyen93.medicare.functions.UserFunctions;
 import com.phongnguyen93.medicare.model.Doctor;
 import com.phongnguyen93.medicare.model.User;
-import com.phongnguyen93.medicare.notification.InAppNotification;
+import com.phongnguyen93.medicare.notification.MyNotification;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.Picasso;
 
@@ -29,8 +29,8 @@ public class ProfileActivity extends AppCompatActivity implements FloatingAction
     ImageView imageView, fav_icon;
     private Doctor doctor;
     private boolean IS_FAV =false;
-    private FunctionFavDoctor functionFavDoctor;
-    private InAppNotification notification;
+    private FavDoctorFunctions favDoctorFunctions;
+    private MyNotification notification;
     private CoordinatorLayout coordinatorLayout;
     private User user;
 
@@ -41,10 +41,10 @@ public class ProfileActivity extends AppCompatActivity implements FloatingAction
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.profile_layout);
         // setup needed service
-        FunctionUser functionUser = new FunctionUser(getApplicationContext());
-        user = functionUser.getCurrentUser();
-        functionFavDoctor = new FunctionFavDoctor(getApplicationContext());
-        notification = new InAppNotification();
+        UserFunctions userFunctions = new UserFunctions(getApplicationContext());
+        user = userFunctions.getCurrentUser();
+        favDoctorFunctions = new FavDoctorFunctions(getApplicationContext());
+        notification = new MyNotification();
         // setup views for this activity
         setupViews();
     }
@@ -89,7 +89,7 @@ public class ProfileActivity extends AppCompatActivity implements FloatingAction
 
     //check if this doctor is faved or not
     private void checkIsFav(String id) {
-        if(functionFavDoctor.isFav(id)){
+        if(favDoctorFunctions.isFav(id)){
             IS_FAV = true;
             fav_icon.setImageResource(R.drawable.ic_favorite_primary_24dp);
             fav_text.setText(getResources().getString(R.string.unfav_text));
@@ -101,7 +101,7 @@ public class ProfileActivity extends AppCompatActivity implements FloatingAction
     private void favStateSelector(){
         String displayText;
         if(IS_FAV){
-            if(functionFavDoctor.removeFavDoctor(doctor.getId(),user.getId())){
+            if(favDoctorFunctions.removeFavDoctor(doctor.getId(),user.getId())){
                 IS_FAV = false;
                 displayText = getResources().getString(R.string.unfav_noti);
                 fav_icon.setImageResource(R.drawable.ic_favorite_border_primary_24dp);
@@ -109,7 +109,7 @@ public class ProfileActivity extends AppCompatActivity implements FloatingAction
                 notification.displaySnackbar(NORMAL_SNACKBAR, coordinatorLayout, displayText,null);
             }
         }else {
-            if(functionFavDoctor.addFavDoctor(doctor,user.getId())){
+            if(favDoctorFunctions.addFavDoctor(doctor,user.getId())){
                 IS_FAV = true;
                 displayText =getResources().getString(R.string.fav_noti);
                 fav_icon.setImageResource(R.drawable.ic_favorite_primary_24dp);

@@ -8,12 +8,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.phongnguyen93.medicare.database.DbHelper.tableBooking;
 import com.phongnguyen93.medicare.database.DbHelper.tableDoctor;
 import com.phongnguyen93.medicare.database.DbHelper.tableSession;
 import com.phongnguyen93.medicare.database.DbHelper.tableUser;
 
 /**
  * Created by Phong Nguyen on 11/4/2015.
+ *
  */
 public class DbOperations extends SQLiteOpenHelper {
     private static final int database_version = 1;
@@ -31,7 +33,7 @@ public class DbOperations extends SQLiteOpenHelper {
     // Create a table to hold doctor info data.  A doctor  consists of the string supplied
     // with id, name, email, address, phone, image path, license, speciality, work time
     // , work days, rating and location coordination ( lat, lng) to add on map
-    final String SQL_CREATE_DOCTOR_TABLE = "CREATE TABLE " + tableDoctor.Table_Name + " (" +
+    private static final String SQL_CREATE_DOCTOR_TABLE = "CREATE TABLE " + tableDoctor.Table_Name + " (" +
             tableDoctor.DR_ID + " TEXT UNIQUE PRIMARY KEY," +
             tableDoctor.DR_NAME + " TEXT," +
             tableDoctor.DR_ADDRESS + " TEXT NOT NULL," +
@@ -47,22 +49,29 @@ public class DbOperations extends SQLiteOpenHelper {
             tableDoctor.IS_FAV + " INTEGER " +
             ");";
 
+    private static final String SQL_CREATE_BOOKING_TABLE = "CREATE TABLE " + tableBooking.Table_Name + " (" +
+            tableBooking.BOOKING_ID + " INTEGER UNIQUE PRIMARY KEY," +
+            tableBooking.BOOKING_DOCTOR + " TEXT NOT NULL," +
+            tableBooking.BOOKING_EMAIL + " TEXT NOT NULL," +
+            tableBooking.BOOKING_PHONE + " TEXT NOT NULL," +
+            tableBooking.BOOKING_ADDRESS + " TEXT NOT NULL," +
+            tableBooking.BOOKING_DATE + " TEXT NOT NULL," +
+            tableBooking.BOOKING_TIME + " TEXT NOT NULL," +
+            tableBooking.REBOOK_DAYS + " INTEGER," +
+            tableBooking.IS_CHECKED + " INTEGER " +
+            ");";
+
     public DbOperations(Context context) {
         super(context, DbHelper.Database_Name, null, database_version);
     }
 
-    public DbOperations(Context context, String name,
-                        SQLiteDatabase.CursorFactory factory, int version,
-                        DatabaseErrorHandler errorHandler) {
-        super(context, name, factory, version, errorHandler);
-        Log.d("Database Operations", "Database created");
-    }
 
     @Override
     public void onCreate(SQLiteDatabase sdb) {
         sdb.execSQL(QUERRY_CREATE_TABLE_SESSION);
         sdb.execSQL(QUERRY_CREATE_TABLE_USER);
         sdb.execSQL(SQL_CREATE_DOCTOR_TABLE);
+        sdb.execSQL(SQL_CREATE_BOOKING_TABLE);
         Log.d("Database Operations", "Tables created");
     }
 
@@ -78,7 +87,7 @@ public class DbOperations extends SQLiteOpenHelper {
         cv.put(tableSession.SESSION_USER, name);
         cv.put(tableSession.SESSION_TOKEN, token);
         long k = SQ.insert(tableSession.Table_Name, null, cv);
-        if( k >0 )
+        if (k > 0)
             Log.d("Database Operations", "Token inserted");
     }
 
@@ -104,7 +113,7 @@ public class DbOperations extends SQLiteOpenHelper {
         cv.put(tableUser.USER_PHONE, phone);
         cv.put(tableUser.USER_EMAIL, email);
         long k = SQ.insert(tableUser.Table_Name, null, cv);
-        if(  k> 0)
+        if (k > 0)
             Log.d("Database Operations", "User inserted");
     }
 
@@ -126,9 +135,9 @@ public class DbOperations extends SQLiteOpenHelper {
     }
 
     public boolean insertDoctor(DbOperations dop,
-                             String id, String name, String address, String email, String phone,
-                             String license, String image, String spec, String workdays,
-                             String worktime, String location, int rating, int is_fav) {
+                                String id, String name, String address, String email, String phone,
+                                String license, String image, String spec, String workdays,
+                                String worktime, String location, int rating, int is_fav) {
         SQLiteDatabase SQ = dop.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(tableDoctor.DR_ID, id);
@@ -145,10 +154,10 @@ public class DbOperations extends SQLiteOpenHelper {
         cv.put(tableDoctor.DR_RATING, rating);
         cv.put(tableDoctor.IS_FAV, is_fav);
         long k = SQ.insert(tableDoctor.Table_Name, null, cv);
-        if (k != 0){
+        if (k != 0) {
             Log.d("Db operation: ", "doctor inserted !");
             return true;
-        }else
+        } else
             return false;
     }
 
@@ -157,20 +166,21 @@ public class DbOperations extends SQLiteOpenHelper {
         String args[] = {id};
         SQLiteDatabase SQ = dop.getWritableDatabase();
         int deletedRowIndex = SQ.delete(tableDoctor.Table_Name, select, args);
-        if (deletedRowIndex > 0){
+        if (deletedRowIndex > 0) {
             Log.d("Db operation: ", "doctor deleted !");
             return true;
-        }else
+        } else
             return false;
 
     }
-    public boolean removeAllDoctor(DbOperations dop){
+
+    public boolean removeAllDoctor(DbOperations dop) {
         SQLiteDatabase SQ = dop.getWritableDatabase();
         int deletedRowIndex = SQ.delete(tableDoctor.Table_Name, null, null);
-        if (deletedRowIndex > 0){
+        if (deletedRowIndex > 0) {
             Log.d("Db operation: ", "doctor deleted !");
             return true;
-        }else
+        } else
             return false;
     }
 
@@ -191,6 +201,7 @@ public class DbOperations extends SQLiteOpenHelper {
                 tableDoctor.IS_FAV};
         return SQ.query(tableDoctor.Table_Name, columns, null, null, null, null, null);
     }
+
     public boolean getDoctor(DbOperations dop, String id) {
         SQLiteDatabase SQ = dop.getReadableDatabase();
         String[] columns = {tableDoctor.DR_ID,
@@ -209,7 +220,131 @@ public class DbOperations extends SQLiteOpenHelper {
         String select = tableDoctor.DR_ID + " LIKE ? ";
         String arg[] = {id};
         Cursor cursor = SQ.query(tableDoctor.Table_Name, columns, select, arg, null, null, null);
-        if(cursor.getCount() > 0)
+        if (cursor.getCount() > 0) {
+            cursor.close();
+            return true;
+        }else
+            return false;
+    }
+
+    public boolean insertBooking(DbOperations dop,
+                                 int id, String doctor, String email, String phone,
+                                 String date, String time, String address, int is_checked, int rebook_days) {
+        SQLiteDatabase SQ = dop.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(tableBooking.BOOKING_ID, id);
+        cv.put(tableBooking.BOOKING_DOCTOR, doctor);
+        cv.put(tableBooking.BOOKING_EMAIL, email);
+        cv.put(tableBooking.BOOKING_PHONE, phone);
+        cv.put(tableBooking.BOOKING_DATE, date);
+        cv.put(tableBooking.BOOKING_TIME, time);
+        cv.put(tableBooking.BOOKING_ADDRESS, address);
+        cv.put(tableBooking.IS_CHECKED, is_checked);
+        cv.put(tableBooking.REBOOK_DAYS, rebook_days);
+        long k = SQ.insert(tableBooking.Table_Name, null, cv);
+        if (k != 0) {
+            Log.d("Db operation: ", "booking is inserted !");
+            return true;
+        } else
+            return false;
+    }
+
+    public boolean removeBooking(DbOperations dop, int id) {
+        String select = tableBooking.BOOKING_ID + " = ? ";
+        String args[] = {id+""};
+        SQLiteDatabase SQ = dop.getWritableDatabase();
+        int deletedRowIndex = SQ.delete(tableBooking.Table_Name, select, args);
+        if (deletedRowIndex > 0) {
+            Log.d("Db operation: ", "booking is deleted !");
+            return true;
+        } else
+            return false;
+
+    }
+
+    public boolean removeAllBooking(DbOperations dop) {
+        SQLiteDatabase SQ = dop.getWritableDatabase();
+        int deletedRowIndex = SQ.delete(tableBooking.Table_Name, null, null);
+        if (deletedRowIndex > 0) {
+            Log.d("Db operation: ", "all bookings are deleted !");
+            return true;
+        } else
+            return false;
+    }
+
+    public Cursor getAllBookings(DbOperations dop) {
+        SQLiteDatabase SQ = dop.getReadableDatabase();
+        String[] columns = {tableBooking.BOOKING_ID,
+                tableBooking.BOOKING_DOCTOR,
+                tableBooking.BOOKING_EMAIL,
+                tableBooking.BOOKING_PHONE,
+                tableBooking.BOOKING_DATE,
+                tableBooking.BOOKING_TIME,
+                tableBooking.BOOKING_ADDRESS,
+                tableBooking.IS_CHECKED,
+                tableBooking.REBOOK_DAYS};
+        return SQ.query(tableBooking.Table_Name, columns, null, null, null, null, null);
+    }
+
+    public Cursor getBooking(DbOperations dop, int id) {
+        SQLiteDatabase SQ = dop.getReadableDatabase();
+        String[] columns = {tableBooking.BOOKING_ID,
+                tableBooking.BOOKING_DOCTOR,
+                tableBooking.BOOKING_EMAIL,
+                tableBooking.BOOKING_PHONE,
+                tableBooking.BOOKING_DATE,
+                tableBooking.BOOKING_TIME,
+                tableBooking.BOOKING_ADDRESS,
+                tableBooking.IS_CHECKED,
+                tableBooking.REBOOK_DAYS};
+        String select = tableBooking.BOOKING_ID + " = ? ";
+        String arg[] = {id+""};
+        Cursor cursor = SQ.query(tableBooking.Table_Name, columns, select, arg, null, null, null);
+        if (cursor.getCount() > 0)
+            return cursor;
+        else
+            return null;
+    }
+
+    public boolean updateBookingStatus(DbOperations dop, int id, boolean status){
+        SQLiteDatabase SQ = dop.getWritableDatabase();
+        String[] args = {id+""};
+        ContentValues cv = new ContentValues();
+        cv.put(tableBooking.IS_CHECKED,status);
+        int updatedRows = SQ.update(tableBooking.Table_Name, cv, tableBooking.BOOKING_ID + "= ?", args);
+        if(updatedRows>0)
+            return true;
+        else
+            return false;
+    }
+
+    public Cursor getBookingByDate(DbOperations dop, String date) {
+        SQLiteDatabase SQ = dop.getReadableDatabase();
+        String[] columns = {tableBooking.BOOKING_ID,
+                tableBooking.BOOKING_DOCTOR,
+                tableBooking.BOOKING_EMAIL,
+                tableBooking.BOOKING_PHONE,
+                tableBooking.BOOKING_DATE,
+                tableBooking.BOOKING_TIME,
+                tableBooking.BOOKING_ADDRESS,
+                tableBooking.IS_CHECKED,
+                tableBooking.REBOOK_DAYS};
+        String select = tableBooking.BOOKING_DATE + " = ? ";
+        String arg[] = {date+""};
+        Cursor cursor = SQ.query(tableBooking.Table_Name, columns, select, arg, null, null, null);
+        if (cursor.getCount() > 0)
+            return cursor;
+        else
+            return null;
+    }
+
+    public boolean updateBookingDate(DbOperations dop, int id, String time) {
+        SQLiteDatabase SQ = dop.getWritableDatabase();
+        String[] args = {id+""};
+        ContentValues cv = new ContentValues();
+        cv.put(tableBooking.BOOKING_TIME,time);
+        int updatedRows = SQ.update(tableBooking.Table_Name, cv, tableBooking.BOOKING_ID + "= ?", args);
+        if(updatedRows>0)
             return true;
         else
             return false;

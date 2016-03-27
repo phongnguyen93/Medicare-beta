@@ -1,19 +1,28 @@
 package com.phongnguyen93.medicare.extras;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.model.Booking;
 import com.phongnguyen93.medicare.ui_view.calendarview.WeekViewEvent;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Created by Phong Nguyen on 11/7/2015.
+ * Utilities that use in functions/ method
  */
 public class Utils {
+
+    public static final String DEFAULT_DATETIME_FORMAT_STRING = "yyyy-MM-dd - HH:mm:ss";
+
+    // Format distance number
     public static String formatNumber(double distance) {
         String unit = "m";
         if (distance < 1) {
@@ -26,6 +35,7 @@ public class Utils {
 
         return String.format("~%4.1f%s", distance, unit);
     }
+    // Convert JSON number to readable string
     public static String convertWorkday(String workdays, Context context){
         ArrayList<String> mWorkdays = new ArrayList<>();
         String mDays="";
@@ -65,6 +75,8 @@ public class Utils {
         }
         return mDays;
     }
+
+    // Convert JSON number to readable string
     public static String convertWorktime(String worktime,Context context){
         String mWorktime="";
         String[] time = worktime.split(",");
@@ -76,6 +88,7 @@ public class Utils {
         return  mWorktime;
     }
 
+    // Validate input from user
     public static boolean validateInput(String input, int type){
         if(input.length()==0)
             return false;
@@ -98,52 +111,54 @@ public class Utils {
         }
         return true;
     }
-    public static ArrayList<WeekViewEvent> arrayToEventList(ArrayList<Booking> bookings,Context context) {
-        ArrayList<WeekViewEvent> events = new ArrayList<>();
-        for (int i = 0; i < bookings.size(); i++) {
-            Booking booking = bookings.get(i);
-            int id = booking.getId();
-            String dr_name = booking.getDr_name();
-            String date = booking.getDate();
-            String time = booking.getTime();
-            String phone = booking.getPhone();
-            String email = booking.getEmail();
-            boolean checked = booking.isChecked();
-            int rebook_days = booking.getRebook_days();
 
-            int start_hour = Integer.parseInt(time.substring(0, 2));
-            int start_minute = Integer.parseInt(time.substring(3, 5));
-            int end_hour = start_hour;
-            int end_minute = start_minute + 5;
-            int year = Integer.parseInt(date.substring(0, 4));
-            int month = Integer.parseInt(date.substring(5, 7));
-            int day = Integer.parseInt(date.substring(8));
-            Calendar startTime = Calendar.getInstance();
-            startTime.set(Calendar.HOUR_OF_DAY, start_hour);
-            startTime.set(Calendar.MINUTE, start_minute);
-            startTime.set(Calendar.DAY_OF_MONTH, day);
-            startTime.set(Calendar.MONTH, month);
-            startTime.set(Calendar.YEAR, year);
-            Calendar endTime = (Calendar) startTime.clone();
-            startTime.set(Calendar.HOUR_OF_DAY, end_hour);
-            startTime.set(Calendar.MINUTE, end_minute);
-            WeekViewEvent event = new WeekViewEvent(1, getEventTitle(startTime), startTime, endTime);
-            if (checked) {
-                event.setColor(context.getResources().getColor(R.color.accent));
-            } else
-                event.setColor(context.getResources().getColor(R.color.base_color));
-            events.add(event);
-        }
-        return  events;
-    }
-    private static String getEventTitle(Calendar time) {
-        return String.format("Lịch hẹn  %02d:%02d %s/%d", time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE), time.get(Calendar.MONTH)+1, time.get(Calendar.DAY_OF_MONTH));
-    }
-
+    // Convert string to LatLng object
     public static LatLng convertLatLng(String location) {
         String[] latlong =  location.split(",");
         double lat= Double.parseDouble(latlong[0]);
         double lng = Double.parseDouble(latlong[1]);
         return new LatLng(lat,lng);
+    }
+
+    // Convert string to Calendar date object
+    public static Calendar convertToDateTime(String date, String time) {
+        try{
+            Calendar cal = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATETIME_FORMAT_STRING, Locale.US);
+            cal.setTime(sdf.parse(date+" - "+time));// all done
+            Log.d("start time",cal.toString());
+            return cal;
+        }catch (ParseException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Create event title string with date time with booking status
+    public static String setEventTitle(Calendar time, boolean checked, Context context) {
+        String baseText;
+        if(checked)
+            baseText = context.getResources().getString(R.string.checked_event_title);
+        else
+            baseText = context.getResources().getString(R.string.unchecked_event_title);
+        return String.format(baseText+"\n%d/%d/%d\n%02d:%02d",
+                time.get(Calendar.DAY_OF_MONTH),
+                time.get(Calendar.MONTH)+1,
+                time.get(Calendar.YEAR),
+                time.get(Calendar.HOUR_OF_DAY),
+                time.get(Calendar.MINUTE)
+                );
+    }
+
+    //Create event description with doctor name
+    public static String setEventDescription(String dr_name, Context context) {
+            return context.getResources().getString(R.string.minimize_doctor)+" : "+dr_name;
+    }
+
+    public static int setEventColor(boolean checked, Context context) {
+        if(checked)
+            return context.getResources().getColor(R.color.accent);
+        else
+            return context.getResources().getColor(R.color.divider);
     }
 }

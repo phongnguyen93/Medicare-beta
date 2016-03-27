@@ -1,6 +1,6 @@
 package com.phongnguyen93.medicare.maps;
 
-import android.annotation.TargetApi;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
 

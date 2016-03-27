@@ -78,7 +78,7 @@
             app:met_helperTextColor="@color/divider"
             app:met_helperText="@string/email_hint"
             app:met_clearButton="true"
-            app:met_iconLeft="@drawable/ic_email_black_24dp"
+            app:met_iconLeft="@drawable/_ic_email_black_24dp"
             app:met_primaryColor="@color/primary" />
 
         <com.rengwuxian.materialedittext.MaterialEditText
@@ -92,7 +92,7 @@
             app:met_clearButton="true"
             app:met_helperText="@string/phone_hint"
             app:met_helperTextColor="@color/divider"
-            app:met_iconLeft="@drawable/ic_phone_black_24dp"
+            app:met_iconLeft="@drawable/_ic_phone_black_24dp"
             app:met_primaryColor="@color/primary" />
     </LinearLayout>
 

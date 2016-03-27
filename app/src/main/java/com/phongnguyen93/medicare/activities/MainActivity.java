@@ -1,10 +1,12 @@
 package com.phongnguyen93.medicare.activities;
 
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
@@ -17,6 +19,7 @@ import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -27,6 +30,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -36,14 +40,16 @@ import com.phongnguyen93.medicare.database.DbOperations;
 import com.phongnguyen93.medicare.extras.En_Decrypt;
 import com.phongnguyen93.medicare.fragments.FavFragment;
 import com.phongnguyen93.medicare.fragments.ListFragment;
-import com.phongnguyen93.medicare.fragments.SecondFragment;
-import com.phongnguyen93.medicare.fragments.TestFragment;
-import com.phongnguyen93.medicare.functions.FunctionFavDoctor;
-import com.phongnguyen93.medicare.functions.FunctionUser;
+import com.phongnguyen93.medicare.fragments.ManageBookingFragment;
+import com.phongnguyen93.medicare.fragments.UserProfileFragment;
+import com.phongnguyen93.medicare.functions.BookingsFunctions;
+import com.phongnguyen93.medicare.functions.FavDoctorFunctions;
+import com.phongnguyen93.medicare.functions.UserFunctions;
 import com.phongnguyen93.medicare.maps.MapOperations;
 import com.phongnguyen93.medicare.model.User;
-import com.phongnguyen93.medicare.notification.InAppNotification;
+import com.phongnguyen93.medicare.notification.MyNotification;
 import com.phongnguyen93.medicare.notification.push_notification.RegistrationIntentService;
+import com.phongnguyen93.medicare.notification.schedule_notification.AlarmReceiver;
 import com.phongnguyen93.medicare.ui_view.tabs.SlidingTabLayout;
 
 import org.json.JSONException;
@@ -58,56 +64,99 @@ import java.util.ArrayList;
 
 import dmax.dialog.SpotsDialog;
 
-public class MainActivity extends BaseActivity implements ListFragment.OnFragmentInteractionListener,
-        SecondFragment.OnFragmentInteractionListener, TestFragment.OnFragmentInteractionListener,
+public class MainActivity extends BaseActivity implements ListFragment.OnFragmentInteractionListener
+        , ManageBookingFragment.OnFragmentInteractionListener,UserProfileFragment.OnFragmentInteractionListener,
         FavFragment.OnFragmentInteractionListener, View.OnClickListener, ViewPager.OnPageChangeListener,
-        InAppNotification.SnackBarAction {
+        MyNotification.SnackBarAction {
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     public static final int LIST_FRAGMENT_ID = 0;
     public static final int MAP_FRAGMENT_ID = 1;
     public static final int SCHEDULE_FRAGMENT_ID = 2;
 
+    public static final int DRAWER_ITEM_SEARCH_ID = 0;
+    public static final int DRAWER_ITEM_MANAGE_ID = 1;
+    public static final int DRAWER_ITEM_PROFILE_ID = 2;
 
     public static final String CURRENT_TAB = "currentTab";
     private static final String PREFS_NAME = "myPreferences";
+    private static final String CURRENT_DRAWER_ITEM = "currentDrawerItem";
 
-    private SlidingTabLayout mSlidingTabLayout;
-    private Fragment fragment;
+    private int[][] states = new int[][]{
+            new int[]{android.R.attr.state_enabled}, // enabled
+            new int[]{android.R.attr.state_focused},
+            new int[]{android.R.attr.state_pressed}
+    };
+
+    private int[] colors;
+
+    private boolean isConnect = true;
+    private DbOperations dp;
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private ActionBarDrawerToggle drawerToggle;
-    private FunctionUser functionUser;
-    private InAppNotification notification;
+    private UserFunctions userFunctions;
+    private MyNotification notification;
     private int currentPage;
+    private int currentDrawerItem;
+    private Fragment fragment;
+    private ArrayList<Fragment> fragments;
     private LinearLayout linearLayout;
-    private FunctionFavDoctor functionFavDoctor;
+    private FavDoctorFunctions favDoctorFunctions;
+    private BookingsFunctions bookingsFunctions;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private boolean isReceiverRegistered;
+    private ViewPager mPager;
+    private SlidingTabLayout mSlidingTabLayout  ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SpotsDialog progressDialog = new SpotsDialog(this, R.style.Custom);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nvView);
+
+
+
         progressDialog.setCancelable(false);
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //set up needed services
-        functionUser = new FunctionUser(getApplicationContext());
-        notification = new InAppNotification(this);
-        User user = functionUser.getCurrentUser();
-        functionFavDoctor = new FunctionFavDoctor(getApplicationContext());
-        functionFavDoctor.setupData(user.getId());
+        userFunctions = new UserFunctions(getApplicationContext());
+        notification = new MyNotification(this);
+        User user = userFunctions.getCurrentUser();
+        favDoctorFunctions = new FavDoctorFunctions(getApplicationContext());
+        bookingsFunctions = new BookingsFunctions(getApplicationContext());
+        favDoctorFunctions.setupData(user.getId());
+        bookingsFunctions.setupBookings(user.getId());
+
+
+        dp = new DbOperations(this);
+
+        if (navigationView != null) {
+            TextView header_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.header_name);
+            header_name.setText(user.getName());
+        }
+
+        //create fragments list
+        fragments = new ArrayList<>();
+        fragments.add(new ListFragment());
+        fragments.add(new MapOperations());
+        fragments.add(new FavFragment());
 
         linearLayout = (LinearLayout) findViewById(R.id.main_layout);
 
+        colors=  new int[]{
+                this.getResources().getColor(R.color.primary_text),
+                this.getResources().getColor(R.color.primary),
+                this.getResources().getColor(R.color.accent)
+        };
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-
         if (settings != null) {
             currentPage = settings.getInt(CURRENT_TAB, LIST_FRAGMENT_ID);
+            currentDrawerItem = settings.getInt(CURRENT_DRAWER_ITEM, DRAWER_ITEM_SEARCH_ID);
         }
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
@@ -118,10 +167,10 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
                 boolean sentToken = sharedPreferences
                         .getBoolean(RegistrationIntentService.SENT_TOKEN_TO_SERVER, false);
                 if (sentToken) {
-                    notification.displaySnackbar(InAppNotification.INFO_SNACKBAR,
+                    notification.displaySnackbar(MyNotification.INFO_SNACKBAR,
                             linearLayout, "Token sent to server", null);
                 } else {
-                    notification.displaySnackbar(InAppNotification.WARNING_SNACKBAR,
+                    notification.displaySnackbar(MyNotification.WARNING_SNACKBAR,
                             linearLayout, "Token NOT sent to server", null);
                 }
             }
@@ -130,16 +179,24 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         // Registering BroadcastReceiver
         registerReceiver();
 
+
         if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         }
 
-        setupDrawer();
-        setupConnCheck();
-        setupTabs(currentPage);
+        setupDrawer(currentDrawerItem);
 
+        if(currentDrawerItem == DRAWER_ITEM_SEARCH_ID)
+            setupTabs(currentPage);
+
+        setupConnCheck();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -150,8 +207,10 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        isReceiverRegistered = false;
+        if (isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+            isReceiverRegistered = true;
+        }
         super.onPause();
     }
 
@@ -168,13 +227,16 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     @Override
     protected void onStop() {
         super.onStop();
+
         // We need an Editor object to make preference changes.
         // All objects are from android.context.Context
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt(CURRENT_TAB, currentPage);
+        editor.putInt(CURRENT_DRAWER_ITEM, currentDrawerItem);
         // Commit the edits!
         editor.apply();
+        dp.close();
     }
 
 
@@ -191,26 +253,38 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     public void doCheckConn(boolean isConnected, boolean isSlowConn) {
         String displayText;
         if (isConnected && isSlowConn) {
+            isConnect = true;
             displayText = getResources().getString(R.string.slow_connect_noti);
-            notification.displaySnackbar(InAppNotification.WARNING_SNACKBAR, linearLayout, displayText, null);
+            notification.displaySnackbar(MyNotification.WARNING_SNACKBAR, linearLayout, displayText, null);
         }
         if (!isConnected) {
+            isConnect = false;
             displayText = getResources().getString(R.string.disconnect_noti);
             String actionText = getResources().getString(R.string.empty_button);
-            notification.displaySnackbar(InAppNotification.ALERT_SNACKBAR, linearLayout, displayText, actionText);
-        } else
+            notification.displaySnackbar(MyNotification.ALERT_SNACKBAR, linearLayout, displayText, actionText);
+        } else {
+            isConnect = true;
             notification.hideSnackbar();
+        }
+
     }
 
     //Set up navigation drawer
-    private void setupDrawer() {
+    private void setupDrawer(int currentSelected) {
         // Find our drawer view
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
-        // Setup drawer view
-        setupDrawerContent(nvDrawer);
-        drawerToggle = setupDrawerToggle();
-        mDrawer.setDrawerListener(drawerToggle);
+        if (nvDrawer != null) {
+            // Setup drawer view
+            setupDrawerContent(nvDrawer);
+            drawerToggle = setupDrawerToggle();
+            mDrawer.setDrawerListener(drawerToggle);
+            nvDrawer.setItemTextAppearance(android.R.style.TextAppearance_Material_Body2);
+            nvDrawer.setItemTextColor(new ColorStateList(states, colors));
+            nvDrawer.setItemIconTintList(new ColorStateList(states, colors));
+        }
+
+        setupFragment(currentSelected);
     }
 
     /* This method create Sliding Tab Layout
@@ -218,25 +292,33 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
      * Create fragment list to add into layout
      */
     private void setupTabs(int currentTab) {
-        //create fragments list
-        ArrayList<Fragment> fragments = new ArrayList<>();
-        fragments.add(new ListFragment());
-        fragments.add(new MapOperations());
-        fragments.add(new FavFragment());
         //setup ViewPager for tab
-        ViewPager mPager = (ViewPager) findViewById(R.id.viewPager);
+        mPager = (ViewPager) findViewById(R.id.viewPager);
         MyPageViewAdapter myPageViewAdapter = new MyPageViewAdapter(getApplicationContext(),
                 getSupportFragmentManager(), fragments);
-        mPager.setAdapter(myPageViewAdapter);
+        if (mPager != null) {
+            //set previous saved tab position
+            mPager.setAdapter(myPageViewAdapter);
+            mPager.setCurrentItem(currentTab);
+        }
         //setup Tab
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.tab_layout);
+        if (mSlidingTabLayout != null) {
+            mSlidingTabLayout.setCustomTabView(R.layout.custom_tab, 0);
+            mSlidingTabLayout.setDistributeEvenly(true);
+            mSlidingTabLayout.setViewPager(mPager);
+            mSlidingTabLayout.setOnPageChangeListener(this);
+            mSlidingTabLayout.setVisibility(View.VISIBLE);
+        }
+    }
 
-        mSlidingTabLayout.setCustomTabView(R.layout.custom_tab, 0);
-        mSlidingTabLayout.setDistributeEvenly(true);
-        mSlidingTabLayout.setViewPager(mPager);
-        mSlidingTabLayout.setOnPageChangeListener(this);
-        //set previous saved tab position
-        mPager.setCurrentItem(currentTab);
+    private void removeAllTabs(){
+        if(fragments != null && fragments.size()>0 && mSlidingTabLayout !=null){
+            mPager.setAdapter(null);
+            mSlidingTabLayout.setVisibility(View.GONE);
+            mSlidingTabLayout = null;
+
+        }
     }
 
 
@@ -246,6 +328,7 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setBackgroundColor(getResources().getColor(R.color.icons));
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -257,24 +340,27 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     }
 
     //Handle the action on drawer item select
-    public void selectDrawerItem(MenuItem menuItem) {
+    private void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the planet to show based on
         // position
-        FragmentManager fragmentManager = getSupportFragmentManager();
         if (menuItem.getItemId() == R.id.nav_exit) {
-            signOut();
+            if (isConnect)
+                signOut();
+            else
+                notification.displayToast(this, getResources().getString(R.string.signout_fail));
         } else {
             switch (menuItem.getItemId()) {
                 case R.id.nav_first_fragment:
-                    fragmentManager.beginTransaction().remove(fragment).commit();
+                    currentDrawerItem = DRAWER_ITEM_SEARCH_ID;
+                    setupFragment(DRAWER_ITEM_SEARCH_ID);
                     break;
                 case R.id.nav_second_fragment:
-                    fragment = new TestFragment();
-                    fragmentManager.beginTransaction().replace(R.id.main_panel, fragment).commit();
+                    currentDrawerItem = DRAWER_ITEM_MANAGE_ID;
+                    setupFragment(DRAWER_ITEM_MANAGE_ID);
                     break;
                 case R.id.nav_third_fragment:
-                    fragment = new SecondFragment();
-                    fragmentManager.beginTransaction().replace(R.id.main_panel, fragment).commit();
+                    currentDrawerItem = DRAWER_ITEM_PROFILE_ID;
+                    setupFragment(DRAWER_ITEM_PROFILE_ID);
                     break;
                 default:
                     throw new UnsupportedOperationException("Unknown fragment");
@@ -282,8 +368,33 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         }
         // Highlight the selected item, update the title, and close the drawer
         menuItem.setChecked(true);
-        setTitle(menuItem.getTitle());
         mDrawer.closeDrawers();
+    }
+
+    private void setupFragment( int currentPosition){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+        switch (currentPosition){
+            case DRAWER_ITEM_SEARCH_ID:
+                setTitle(R.string.drawer_search);
+                if(fragment!=null)
+                    fragmentTransaction.remove(fragment).commit();
+                setupTabs(currentPage);
+                break;
+            case DRAWER_ITEM_MANAGE_ID:
+                removeAllTabs();
+                setTitle(R.string.drawer_manage);
+                fragment = new ManageBookingFragment();
+                fragmentTransaction.replace(R.id.main_panel, fragment).commit();
+                break;
+            case DRAWER_ITEM_PROFILE_ID:
+                removeAllTabs();
+                setTitle(R.string.drawer_profile);
+                fragment = new UserProfileFragment();
+                fragmentTransaction.replace(R.id.main_panel, fragment).commit();
+                break;
+        }
     }
 
     /**
@@ -293,7 +404,6 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
     private void signOut() {
         //remove local tokens session
         String token, id;
-        DbOperations dp = new DbOperations(this);
         Cursor CR = dp.getToken(dp);
         CR.moveToFirst();
         do {
@@ -304,9 +414,11 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         //remove server token
         removeServerToken(id, token);
         //remove current user
-        functionUser.removeCurrentUser(En_Decrypt.fromHex(id));
+        userFunctions.removeCurrentUser(En_Decrypt.fromHex(id));
         //remove all faved doctor from local db
-        functionFavDoctor.removeAllDoctorFromLocal();
+        favDoctorFunctions.removeAllDoctorFromLocal();
+
+        bookingsFunctions.removeAllBookings();
         //navigate to welcome screen
         Intent t = new Intent(MainActivity.this, WelcomeActivity.class);
         t.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -322,7 +434,6 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
     //This method remove session token from local db
     private void removeLocalToken(String id, String token) {
-        DbOperations dp = new DbOperations(this);
         dp.removeToken(dp, id, token);
     }
 

@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/icons"
+    xmlns:agendaCalendar="http://schemas.android.com/apk/res-auto"
+    tools:context="com.phongnguyen93.medicare.fragments.ManageBookingFragment">
+
+    <com.github.tibolte.agendacalendarview.AgendaCalendarView
+        android:id="@+id/agenda_calendar_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        agendaCalendar:agendaCurrentDayTextColor="@color/primary"
+        agendaCalendar:calendarColor="@android:color/white"
+        agendaCalendar:calendarCurrentDayTextColor="@color/primary"
+        agendaCalendar:calendarDayTextColor="@color/secondary_text"
+        agendaCalendar:calendarHeaderColor="@color/secondary_text"
+        agendaCalendar:calendarPastDayTextColor="@color/divider"
+        agendaCalendar:fabColor="@color/primary" />
+
+</LinearLayout>

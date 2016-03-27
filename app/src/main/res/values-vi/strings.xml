@@ -39,9 +39,8 @@
     <string name="tab_fav">Yêu thích</string>
     <string name="title_activity_main">Tìm kiếm và quản lý lịch</string>
     <string name="drawer_profile">Hồ sơ cá nhân</string>
-    <string name="drawer_search">Tìm kiếm</string>
-    <string name="drawer_manage">Quản lý</string>
-    <string name="drawer_setting">Cài đặt</string>
+    <string name="drawer_search">Tìm kiếm &amp; đặt lịch</string>
+    <string name="drawer_manage">Quản lý lịch hẹn</string>
     <string name="drawer_signout">Đăng xuất</string>
     <string name="signup_success">Đăng kí tài khoản thành công !</string>
     <string name="invalid_id">ID phải có kí tự (a_z,A_Z) hoặc số (0_9),  từ 6 -> 20 kí tự</string>
@@ -110,5 +109,22 @@
     <string name="confirm_noti_time">Giờ     : </string>
     <string name="confirm_noti_address">Địa chỉ : </string>
     <string name="confirm_noti_title">Xác nhận lịch khám</string>
+    <string name="title_activity_booking_detail">Chi tiết lịch khám</string>
     <string name="confirm_noti_message">Lịch khám của bạn đã được xác nhận</string>
+    <string name="status_unchecked_text">Chưa xác nhận</string>
+    <string name="status_checked_text">Đã xác nhận</string>
+    <string name="checked_event_title">Lịch đã xác nhận</string>
+    <string name="unchecked_event_title">Lịch chưa xác nhận</string>
+    <string name="minimize_doctor">Bs</string>
+    <string name="pref_confirm_booking_title">Thông báo lịch đã xác nhận</string>
+    <string name="pref_confirm_booking_summary">Nhận thông báo khi lịch hẹn khám được xác nhận</string>
+    <string name="pref_upcoming_booking_title">Thông báo lịch hẹn sắp đến</string>
+    <string name="pref_upcoming_booking_summary">Nhận thông báo khi có lịch hẹn sắp đến</string>
+    <string name="pref_confirm_email_title">Xác nhận lịch hẹn qua email</string>
+    <string name="title_activity_settting">Thiết lập</string>
+    <string name="signout_fail">Vui lòng thử lại sau</string>
+    <string name="drawer_info">Thông tin ứng dụng</string>
+    <string name="group_noti_title">Hôm nay bạn có </string>
+    <string name="alarm_noti_title">Lịch hẹn sắp đến lúc</string>
+    <string name="alarm_noti_message">Hôm nay bạn có lịch hẹn</string>
 </resources>

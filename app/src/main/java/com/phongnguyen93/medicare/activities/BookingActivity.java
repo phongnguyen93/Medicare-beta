@@ -9,21 +9,23 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.phongnguyen93.medicare.R;
-import com.phongnguyen93.medicare.functions.FunctionUser;
+import com.phongnguyen93.medicare.functions.BookingsFunctions;
+import com.phongnguyen93.medicare.functions.UserFunctions;
 import com.phongnguyen93.medicare.extras.Utils;
-import com.phongnguyen93.medicare.json.JSONObjectRequest;
+import com.phongnguyen93.medicare.thread.network_thread.JSONObjectRequest;
+import com.phongnguyen93.medicare.model.Booking;
 import com.phongnguyen93.medicare.model.Doctor;
 import com.phongnguyen93.medicare.model.User;
 import com.phongnguyen93.medicare.ui_view.calendarpicker.CalendarPickerView;
 import com.phongnguyen93.medicare.ui_view.dateslider.DateSlider;
 import com.phongnguyen93.medicare.ui_view.dateslider.TimeSlider;
 import com.rengwuxian.materialedittext.MaterialEditText;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,11 +42,13 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
     MaterialEditText edit_date, edit_time, edit_drName, edit_phone, edit_email;
     private Doctor doctor;
     private User user;
-    private FunctionUser functionUser;
+    private UserFunctions userFunctions;
     private String insertDate;
     private String inserTime;
     private AlertDialog theDialog;
     private CalendarPickerView dialogView;
+    private Booking booking;
+    private BookingsFunctions bookingsFunctions;
     private DateSlider.OnDateSetListener mTimeSetListener =
             new DateSlider.OnDateSetListener() {
                 public void onDateSet(DateSlider view, Calendar selectedDate) {
@@ -57,10 +61,18 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
-        functionUser = new FunctionUser(getApplicationContext());
+        userFunctions = new UserFunctions(getApplicationContext());
+        bookingsFunctions =  new BookingsFunctions(getApplicationContext());
         doctor = getIntent().getParcelableExtra("doctor");
-        user = functionUser.getCurrentUser();
+        user = userFunctions.getCurrentUser();
         viewHolder();
+        setupAdBanner();
+    }
+
+    private void setupAdBanner() {
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     private void viewHolder() {
@@ -71,7 +83,8 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
         edit_time = (MaterialEditText)findViewById(R.id.edit_time);
 
         doctor = getIntent().getParcelableExtra("doctor");
-
+        edit_email.setText(user.getEmail());
+        edit_phone.setText(user.getPhone());
         edit_drName.setText(doctor.getName());
         edit_drName.setClickable(false);
         edit_time.setOnTouchListener(this);
@@ -148,6 +161,7 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
                 "&time="+time+
                 "&phone="+phone+
                 "&email="+email+"";
+        booking= new Booking(0,doctor.getName(),date,time,phone,email,false,0,doctor.getAddress());
         jsonObjectRequest.execute(URL);
     }
 
@@ -167,6 +181,11 @@ public class BookingActivity extends BaseActivity implements View.OnTouchListene
     private void validateBooking(JSONObject jsonObject) throws JSONException{
         boolean status = jsonObject.getBoolean("status");
         if(status){
+
+            int bookingId = Integer.parseInt(jsonObject.getString("token"));
+            booking.setId(bookingId);
+            bookingsFunctions.insertBookingToLocal(booking);
+
             Toast.makeText(getApplicationContext(),getResources().getString(R.string.booking_success),Toast.LENGTH_LONG).show();
             finish();
         }else{

@@ -9,9 +9,9 @@ import android.widget.Toast;
 
 import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.database.DbOperations;
-import com.phongnguyen93.medicare.functions.FunctionUser;
+import com.phongnguyen93.medicare.functions.UserFunctions;
 import com.phongnguyen93.medicare.extras.En_Decrypt;
-import com.phongnguyen93.medicare.json.JSONObjectRequest;
+import com.phongnguyen93.medicare.thread.network_thread.JSONObjectRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,14 +26,14 @@ public class LoginActivity extends BaseActivity implements Button.OnClickListene
     private com.rengwuxian.materialedittext.MaterialEditText edt_id, edt_pass;
     private Button btn_login;
     DbOperations dp;
-    FunctionUser functionUser;
+    UserFunctions userFunctions;
     private String USER_ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        functionUser = new FunctionUser(getApplicationContext());
+        userFunctions = new UserFunctions(getApplicationContext());
         viewHolder();
     }
 
@@ -65,7 +65,7 @@ public class LoginActivity extends BaseActivity implements Button.OnClickListene
                             Log.d("encrypt_string", user_id + "," + user_pass);
                             decrypt_id = En_Decrypt.fromHex(user_id);
                             decrypt_pass = En_Decrypt.fromHex(user_pass);
-                            functionUser.setCurrentUser(decrypt_id, decrypt_pass);
+                            userFunctions.setCurrentUser(decrypt_id, decrypt_pass);
                             Log.d("decrypt_string", decrypt_id + "," + decrypt_pass);
 
                         } catch (Exception e) {

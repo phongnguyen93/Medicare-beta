@@ -24,25 +24,25 @@ import com.phongnguyen93.medicare.R;
 import com.phongnguyen93.medicare.activities.BookingActivity;
 import com.phongnguyen93.medicare.activities.ProfileActivity;
 import com.phongnguyen93.medicare.adapters.RecyclerViewAdapter;
-import com.phongnguyen93.medicare.functions.FunctionFavDoctor;
-import com.phongnguyen93.medicare.functions.FunctionUser;
+import com.phongnguyen93.medicare.functions.FavDoctorFunctions;
+import com.phongnguyen93.medicare.functions.UserFunctions;
 import com.phongnguyen93.medicare.model.Doctor;
 import com.phongnguyen93.medicare.model.User;
-import com.phongnguyen93.medicare.notification.InAppNotification;
+import com.phongnguyen93.medicare.notification.MyNotification;
 
 import java.util.ArrayList;
 
 
-public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemClickListener, PopupMenu.OnMenuItemClickListener,InAppNotification.SnackBarAction {
+public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemClickListener, PopupMenu.OnMenuItemClickListener,MyNotification.SnackBarAction {
     private static final int ACTION_SNACKBAR = 4;
 
     private Context context;
     private ArrayList<Doctor> doctors;
     private RecyclerViewAdapter adapter;
     private OnFragmentInteractionListener mListener;
-    private FunctionFavDoctor functionFavDoctor;
+    private FavDoctorFunctions favDoctorFunctions;
     private LinearLayout linearLayout;
-    private InAppNotification notification;
+    private MyNotification notification;
 
     private User user;
     private Doctor tempDoctor;
@@ -69,9 +69,9 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
         super.onCreate(savedInstanceState);
         //set fragment has option menu
         setHasOptionsMenu(true);
-        FunctionUser functionUser = new FunctionUser(getContext());
-        user = functionUser.getCurrentUser();
-        notification = new InAppNotification(this);
+        UserFunctions userFunctions = new UserFunctions(getContext());
+        user = userFunctions.getCurrentUser();
+        notification = new MyNotification(this);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
         context = getActivity().getApplicationContext();
         View v = inflater.inflate(R.layout.fav_fragment, container, false);
         linearLayout = (LinearLayout) v.findViewById(R.id.fav_layout);
-        functionFavDoctor = new FunctionFavDoctor(context);
+        favDoctorFunctions = new FavDoctorFunctions(context);
         setupView(v);
         return v;
     }
@@ -101,7 +101,7 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
         rvContacts.setLayoutManager(linearLayoutManager);
         rvContacts.setHasFixedSize(false);
         //get doctor list from local db
-        doctors = functionFavDoctor.getFavDoctor();
+        doctors = favDoctorFunctions.getFavDoctor();
         //if doctor list size > 0,  set adapter for recycler view
         // else show empty layout
         if (doctors != null && doctors.size() > 0) {
@@ -179,7 +179,7 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
         doctors.remove(LIST_ITEM_POSITION);
         adapter.notifyDataSetChanged();
         checkDataSetForLayoutChange();
-        functionFavDoctor.removeFavDoctor(tempDoctor.getId(), user.getId());
+        favDoctorFunctions.removeFavDoctor(tempDoctor.getId(), user.getId());
         //display snackbar for undo action
         String actionText = context.getResources().getString(R.string.unfav_undo);
         String displayText = context.getResources().getString(R.string.unfav_noti);
@@ -206,7 +206,7 @@ public class FavFragment extends Fragment implements RecyclerViewAdapter.OnItemC
     // Undo action on snack bar action
     @Override
     public void setSnackBarAction() {
-        functionFavDoctor.addFavDoctor(getTempDoctor(), user.getId());
+        favDoctorFunctions.addFavDoctor(getTempDoctor(), user.getId());
         doctors.add(PREVIOUS_ITEM_POSITION, tempDoctor);
         adapter.notifyDataSetChanged();
         checkDataSetForLayoutChange();
