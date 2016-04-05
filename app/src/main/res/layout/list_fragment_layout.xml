@@ -38,5 +38,5 @@
         app:backgroundTint="@color/primary"
         app:layout_anchor="@+id/recycler_view"
         app:layout_anchorGravity="bottom|end"
-        app:layout_behavior="com.phongnguyen93.medicare.ui_view.FABScrollBehavior" />
+        app:layout_behavior="com.namlongsolutions.medicare.ui_view.FABScrollBehavior" />
 </android.support.design.widget.CoordinatorLayout>

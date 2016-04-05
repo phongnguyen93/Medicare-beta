@@ -3,8 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:background="@color/icons"
+    android:orientation="vertical"
     xmlns:agendaCalendar="http://schemas.android.com/apk/res-auto"
-    tools:context="com.phongnguyen93.medicare.fragments.ManageBookingFragment">
+    tools:context="com.namlongsolutions.medicare.fragments.ManageBookingFragment">
+
+    <ViewStub
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/empty_layout"
+        android:visibility="gone" />
 
     <com.github.tibolte.agendacalendarview.AgendaCalendarView
         android:id="@+id/agenda_calendar_view"

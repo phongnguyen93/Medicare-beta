@@ -25,12 +25,12 @@
             android:background="@color/base_color"
             android:orientation="vertical">
 
-            <com.phongnguyen93.medicare.ui_view.tabs.SlidingTabLayout
+            <com.namlongsolutions.medicare.ui_view.tabs.SlidingTabLayout
                 android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/primary">
-            </com.phongnguyen93.medicare.ui_view.tabs.SlidingTabLayout>
+            </com.namlongsolutions.medicare.ui_view.tabs.SlidingTabLayout>
 
             <View
                 android:layout_width="match_parent"

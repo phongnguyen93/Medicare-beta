@@ -1,4 +1,4 @@
-package com.phongnguyen93.medicare.gcmbackend;
+package com.namlongsolutions.medicare.gcmbackend;
 
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;

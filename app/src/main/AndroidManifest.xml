@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.phongnguyen93.medicare">
+    package="com.namlongsolutions.medicare" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <uses-feature
         android:name="android.hardware.location"
@@ -18,9 +19,6 @@
     <uses-feature
         android:name="android.hardware.location.gps"
         android:required="true" />
-
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <permission
         android:name="com.example.gcm.permission.C2D_MESSAGE"
@@ -31,50 +29,44 @@
     <application
         android:name=".Application"
         android:allowBackup="true"
-        android:icon="@drawable/applogo"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:screenOrientation="portrait"
-        android:theme="@style/Theme.Styled">
+        android:theme="@style/Theme.Styled" >
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-        <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="@string/google_maps_key" />
-
         <activity
             android:name=".activities.SignupActivity"
             android:label="@string/title_activity_signup"
             android:parentActivityName=".activities.WelcomeActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.WelcomeActivity" />
+                android:value="com.namlongsolutions.medicare.activities.WelcomeActivity" />
         </activity>
         <activity
             android:name=".activities.LoginActivity"
             android:label="@string/login_button_text"
             android:parentActivityName=".activities.WelcomeActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.WelcomeActivity" />
+                android:value="com.namlongsolutions.medicare.activities.WelcomeActivity" />
         </activity>
-        <activity
-            android:name=".maps.MapOperations"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.WelcomeActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/BaseTheme">
+            android:theme="@style/BaseTheme" >
             \>
         </activity>
         <activity
             android:name=".activities.MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/BaseTheme" />
         <activity
             android:name=".activities.DispatchActivity"
-            android:theme="@style/BaseTheme">
+            android:theme="@style/BaseTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -88,17 +80,18 @@
         <activity
             android:name=".activities.ProfileActivity"
             android:label="@string/title_activity_profile"
-            android:parentActivityName=".activities.MainActivity">
+            android:theme="@style/Theme.Styled"
+            android:parentActivityName=".activities.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.phongnguyen93.medicare.activities.MainActivity" />
+                android:value="com.namlongsolutions.medicare.activities.MainActivity" />
         </activity>
         <activity
             android:name=".activities.BookingActivity"
-            android:label="@string/title_activity_booking"></activity>
+            android:label="@string/title_activity_booking" />
         <activity
             android:name=".activities.SearchResultActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop" >
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -112,13 +105,13 @@
             android:name=".database.DataProvider"
             android:authorities="@string/content_authority"
             android:exported="false"
-            android:syncable="true"></provider>
+            android:syncable="true" />
 
         <!-- [START gcm_receiver] -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND">
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
@@ -131,7 +124,7 @@
         <!-- [START gcm_listener] -->
         <service
             android:name=".notification.push_notification.GcmMessageHandler"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
@@ -140,7 +133,7 @@
         <!-- [START instanceId_listener] -->
         <service
             android:name=".notification.push_notification.MyInstanceIDListenerService"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
@@ -148,14 +141,12 @@
         <!-- [END instanceId_listener] -->
         <service
             android:name=".notification.push_notification.RegistrationIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
 
-
-        <receiver android:name=".notification.schedule_notification.AlarmReceiver"></receiver>
-
+        <receiver android:name=".notification.schedule_notification.AlarmReceiver" />
         <receiver
             android:name=".notification.schedule_notification.BootReceiver"
-            android:enabled="false">
+            android:enabled="false" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -166,19 +157,31 @@
         <activity
             android:name=".activities.BookingDetailActivity"
             android:label="@string/title_activity_booking_detail"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.phongnguyen93.medicare.activities.MainActivity" />
+                android:value="com.namlongsolutions.medicare.activities.MainActivity" />
         </activity>
         <activity
             android:name=".activities.SettingActivity"
             android:label="@string/title_activity_settting"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.phongnguyen93.medicare.activities.MainActivity" />
+                android:value="com.namlongsolutions.medicare.activities.MainActivity" />
         </activity>
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
     </application>
 
 </manifest>

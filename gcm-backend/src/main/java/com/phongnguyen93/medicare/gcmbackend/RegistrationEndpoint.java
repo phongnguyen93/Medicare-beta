@@ -4,7 +4,7 @@
    https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/GcmEndpoints
 */
 
-package com.phongnguyen93.medicare.gcmbackend;
+package com.namlongsolutions.medicare.gcmbackend;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 import javax.inject.Named;
 
-import static com.phongnguyen93.medicare.gcmbackend.OfyService.ofy;
+import static com.namlongsolutions.medicare.gcmbackend.OfyService.ofy;
 
 /**
  * A registration endpoint class we are exposing for a device's GCM registration id on the backend

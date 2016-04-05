@@ -4,7 +4,7 @@
    https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/GcmEndpoints
 */
 
-package com.phongnguyen93.medicare.gcmbackend;
+package com.namlongsolutions.medicare.gcmbackend;
 
 import com.google.android.gcm.server.Constants;
 import com.google.android.gcm.server.Message;
@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 
 import javax.inject.Named;
 
-import static com.phongnguyen93.medicare.gcmbackend.OfyService.ofy;
+import static com.namlongsolutions.medicare.gcmbackend.OfyService.ofy;
 
 /**
  * An endpoint to send messages to devices registered with the backend

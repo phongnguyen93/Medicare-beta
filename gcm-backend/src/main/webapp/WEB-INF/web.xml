@@ -13,8 +13,8 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>com.phongnguyen93.medicare.gcmbackend.RegistrationEndpoint,
-                com.phongnguyen93.medicare.gcmbackend.MessagingEndpoint
+            <param-value>com.namlongsolutions.medicare.gcmbackend.RegistrationEndpoint,
+                com.namlongsolutions.medicare.gcmbackend.MessagingEndpoint
             </param-value>
         </init-param>
     </servlet>

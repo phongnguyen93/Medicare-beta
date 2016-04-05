@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/base_color"
-    tools:context="com.phongnguyen93.medicare.activities.BookingActivity">
+    tools:context="com.namlongsolutions.medicare.activities.BookingActivity">
 
     <TextView
         android:id="@+id/title"

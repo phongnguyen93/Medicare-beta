@@ -4,7 +4,7 @@
     android:id="@+id/profile_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.phongnguyen93.medicare.activities.ProfileActivity">
+    tools:context="com.namlongsolutions.medicare.activities.ProfileActivity">
 
     <ScrollView
         android:id="@+id/profile_sector"
@@ -177,6 +177,6 @@
         app:backgroundTint="@color/primary"
         app:layout_anchor="@+id/profile_sector"
         app:layout_anchorGravity="bottom|end"
-        app:layout_behavior="com.phongnguyen93.medicare.ui_view.FABScrollBehavior" />
+        app:layout_behavior="com.namlongsolutions.medicare.ui_view.FABScrollBehavior" />
 
 </android.support.design.widget.CoordinatorLayout>

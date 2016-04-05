@@ -6,7 +6,7 @@
     android:background="@color/icons"
     android:orientation="vertical"
     android:tag="schedule_fragment"
-    tools:context="com.phongnguyen93.medicare.fragments.FavFragment">
+    tools:context="com.namlongsolutions.medicare.fragments.FavFragment">
 
     <ViewStub
         android:id="@+id/empty_view"

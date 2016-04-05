@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.phongnguyen93.medicare.ui_view.calendarpicker.MonthView
+<com.namlongsolutions.medicare.ui_view.calendarpicker.MonthView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -16,12 +16,12 @@
       android:textColor="@color/primary"
       style="@style/CalendarTitle"
       />
-  <com.phongnguyen93.medicare.ui_view.calendarpicker.CalendarGridView
+  <com.namlongsolutions.medicare.ui_view.calendarpicker.CalendarGridView
       android:id="@+id/calendar_grid"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       >
-    <com.phongnguyen93.medicare.ui_view.calendarpicker.CalendarRowView
+    <com.namlongsolutions.medicare.ui_view.calendarpicker.CalendarRowView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/calendar_day_headers_paddingbottom"
@@ -61,12 +61,13 @@
           android:layout_height="wrap_content"
           style="@style/CalendarCell.DayHeader"
           />
-    </com.phongnguyen93.medicare.ui_view.calendarpicker.CalendarRowView>
+    </com.namlongsolutions.medicare.ui_view.calendarpicker.CalendarRowView>
+
     <include layout="@layout/week"/>
     <include layout="@layout/week"/>
     <include layout="@layout/week"/>
     <include layout="@layout/week"/>
     <include layout="@layout/week"/>
     <include layout="@layout/week"/>
-  </com.phongnguyen93.medicare.ui_view.calendarpicker.CalendarGridView>
-</com.phongnguyen93.medicare.ui_view.calendarpicker.MonthView>
+  </com.namlongsolutions.medicare.ui_view.calendarpicker.CalendarGridView>
+</com.namlongsolutions.medicare.ui_view.calendarpicker.MonthView>

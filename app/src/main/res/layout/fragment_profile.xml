@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.phongnguyen93.medicare.fragments.UserProfileFragment">
+    tools:context="com.namlongsolutions.medicare.fragments.UserProfileFragment">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"

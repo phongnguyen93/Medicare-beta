@@ -127,4 +127,5 @@
     <string name="group_noti_title">Hôm nay bạn có </string>
     <string name="alarm_noti_title">Lịch hẹn sắp đến lúc</string>
     <string name="alarm_noti_message">Hôm nay bạn có lịch hẹn</string>
+    <string name="agenda_event_no_events">Không có lịch hẹn</string>
 </resources>

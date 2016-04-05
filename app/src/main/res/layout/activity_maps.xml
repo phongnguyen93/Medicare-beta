@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:tag="map_fragment"
-    tools:context="com.phongnguyen93.medicare.maps.MapFragment">
+    tools:context="com.namlongsolutions.medicare.maps.MapFragment">
 
     <com.google.android.gms.maps.MapView
         xmlns:android="http://schemas.android.com/apk/res/android"
